@@ -1,3 +1,9 @@
+<p align="center">
+  <img src="docs/vgi-logo.png" alt="Vector Gateway Interface (VGI)" width="320">
+</p>
+
+<p align="center"><em>A <a href="https://query.farm">Query.Farm</a> VGI worker for DuckDB.</em></p>
+
 # vgi-chart
 
 [![test](https://github.com/Query-farm/vgi-chart/actions/workflows/test.yml/badge.svg)](https://github.com/Query-farm/vgi-chart/actions/workflows/test.yml)
@@ -173,3 +179,12 @@ shadowJar → HTTP boot smoke test → `make test-sql`.
 ## License
 
 MIT — see [LICENSE](LICENSE). JFreeChart is LGPL-2.1 (see the note above).
+
+---
+
+## Authorship & License
+
+Written by [Query.Farm](https://query.farm) — every VGI worker is designed and built by Query.Farm.
+
+Copyright 2026 Query Farm LLC - https://query.farm
+
