@@ -4,7 +4,9 @@
 
 <p align="center"><em>A <a href="https://query.farm">Query.Farm</a> VGI worker for DuckDB.</em></p>
 
-# vgi-chart
+# Render Line, Bar, Pie & Scatter Charts to PNG in DuckDB
+
+> **vgi-chart** · a [Query.Farm](https://query.farm) VGI worker · powered by JFreeChart
 
 [![test](https://github.com/Query-farm/vgi-chart/actions/workflows/test.yml/badge.svg)](https://github.com/Query-farm/vgi-chart/actions/workflows/test.yml)
 
