@@ -1,0 +1,88 @@
+package farm.query.vgi.chart;
+
+import farm.query.vgi.function.ArgSpec;
+import farm.query.vgi.function.Arguments;
+import farm.query.vgi.function.FunctionMetadata;
+import farm.query.vgi.tableinout.TableInOutExchangeState;
+import farm.query.vgi.tableinout.TableInOutInitParams;
+import farm.query.vgi.types.Schemas;
+import org.apache.arrow.vector.FieldVector;
+import org.apache.arrow.vector.VectorSchemaRoot;
+import org.jfree.chart.JFreeChart;
+
+import java.util.ArrayList;
+import java.util.List;
+
+/**
+ * {@code chart_scatter(TABLE, x := 'x', y := 'y', series := NULL, title := NULL,
+ * width := 800, height := 600) -> (png BLOB)} — a scatter plot. Both x and y must
+ * be numeric. With a {@code series} column, one point series per series value.
+ */
+public final class ChartScatterFunction extends ChartFunction {
+
+    @Override public String name() { return "chart_scatter"; }
+
+    @Override public FunctionMetadata metadata() {
+        return FunctionMetadata.describe(
+                        "Render a scatter plot from an input relation to a PNG image BLOB (JFreeChart). "
+                                + "With a series column, one point series per series value.")
+                .withCategories("chart", "visualization", "jfreechart");
+    }
+
+    @Override public List<ArgSpec> argumentSpecs() {
+        return List.of(
+                ArgSpec.table("input", 0),
+                ArgSpec.named("x", Schemas.UTF8, "x"),
+                ArgSpec.named("y", Schemas.UTF8, "y"),
+                ArgSpec.named("series", Schemas.UTF8, ""),
+                titleArg(), widthArg(), heightArg());
+    }
+
+    @Override public TableInOutExchangeState createExchange(TableInOutInitParams params) {
+        Arguments a = params.arguments();
+        return new State(
+                a.namedString("x", "x"),
+                a.namedString("y", "y"),
+                a.namedString("series", ""),
+                a.namedString("title", ""),
+                (int) a.namedLong("width", 800),
+                (int) a.namedLong("height", 600));
+    }
+
+    private static final class State extends ChartState {
+        private final String xCol;
+        private final String yCol;
+        private final String seriesCol;
+
+        private final List<double[]> points = new ArrayList<>();
+        private final List<String> seriesKeys = new ArrayList<>();
+
+        State(String xCol, String yCol, String seriesCol, String title, int width, int height) {
+            super(width, height, title);
+            this.xCol = xCol;
+            this.yCol = yCol;
+            this.seriesCol = seriesCol;
+        }
+
+        @Override protected void accumulate(VectorSchemaRoot in) {
+            FieldVector xv = Columns.require(in, xCol, "x");
+            FieldVector yv = Columns.require(in, yCol, "y");
+            FieldVector sv = Columns.optional(in, seriesCol);
+
+            int n = in.getRowCount();
+            for (int r = 0; r < n; r++) {
+                if (Columns.isNull(xv, r) || Columns.isNull(yv, r)) continue;
+                points.add(new double[]{
+                        Columns.asNumeric(xv, r, xCol, "x"),
+                        Columns.asNumeric(yv, r, yCol, "y")});
+                seriesKeys.add(sv != null && !Columns.isNull(sv, r)
+                        ? Columns.asString(sv, r) : "points");
+            }
+        }
+
+        @Override protected JFreeChart render() {
+            if (points.isEmpty()) return null;
+            return ChartRenderer.scatter(points, seriesKeys, title, xCol, yCol);
+        }
+    }
+}

@@ -1,0 +1,107 @@
+# name: test/sql/chart.test
+# group: [vgi_chart]
+#
+# E2E: render each chart type from a small relation and assert the BLOB is a
+# non-empty PNG. Rendering is not byte-stable across platforms, so we only check
+# the PNG signature (first 4 bytes = \x89PNG) and that the BLOB is non-trivial —
+# pixel dimensions are verified in the JUnit suite (ImageIO re-read).
+
+require-env VGI_CHART_WORKER
+
+statement ok
+LOAD vgi;
+
+statement ok
+ATTACH 'chart' AS chart (TYPE vgi, LOCATION '${VGI_CHART_WORKER}');
+
+# Shared sample data.
+statement ok
+CREATE TEMP TABLE points AS
+  SELECT * FROM (VALUES (1.0, 2.0), (2.0, 4.0), (3.0, 9.0), (4.0, 16.0)) AS t(x, y);
+
+statement ok
+CREATE TEMP TABLE cats AS
+  SELECT * FROM (VALUES ('a', 10.0), ('b', 25.0), ('c', 15.0)) AS t(category, value);
+
+# ---- chart_line -------------------------------------------------------------
+
+query I
+SELECT png[1:4] = '\x89PNG'::BLOB AND octet_length(png) > 100
+FROM chart.chart_line((SELECT x, y FROM points), x := 'x', y := 'y');
+----
+true
+
+# ---- chart_bar --------------------------------------------------------------
+
+query I
+SELECT png[1:4] = '\x89PNG'::BLOB AND octet_length(png) > 100
+FROM chart.chart_bar((SELECT category, value FROM cats), category := 'category', value := 'value');
+----
+true
+
+# ---- chart_scatter ----------------------------------------------------------
+
+query I
+SELECT png[1:4] = '\x89PNG'::BLOB AND octet_length(png) > 100
+FROM chart.chart_scatter((SELECT x, y FROM points), x := 'x', y := 'y');
+----
+true
+
+# ---- chart_pie --------------------------------------------------------------
+
+query I
+SELECT png[1:4] = '\x89PNG'::BLOB AND octet_length(png) > 100
+FROM chart.chart_pie((SELECT category AS label, value FROM cats), label := 'label', value := 'value');
+----
+true
+
+# ---- chart_histogram --------------------------------------------------------
+
+query I
+SELECT png[1:4] = '\x89PNG'::BLOB AND octet_length(png) > 100
+FROM chart.chart_histogram((SELECT y AS value FROM points), value := 'value', bins := 5);
+----
+true
+
+# ---- series-grouped line ----------------------------------------------------
+
+query I
+SELECT png[1:4] = '\x89PNG'::BLOB AND octet_length(png) > 100
+FROM chart.chart_line(
+  (SELECT * FROM (VALUES (1.0, 2.0, 'g1'), (2.0, 3.0, 'g1'), (1.0, 5.0, 'g2'), (2.0, 6.0, 'g2'))
+     AS t(x, y, g)),
+  x := 'x', y := 'y', series := 'g');
+----
+true
+
+# ---- custom width/height + title still a valid PNG --------------------------
+
+query I
+SELECT png[1:4] = '\x89PNG'::BLOB
+FROM chart.chart_line((SELECT x, y FROM points), x := 'x', y := 'y',
+                      title := 'Squares', width := 400, height := 300);
+----
+true
+
+# ---- empty relation -> no rows (documented) ---------------------------------
+# When the input relation is genuinely empty, DuckDB's vgi extension delivers no
+# input batch at all (not even a zero-row one), so the worker emits no PNG row.
+# This is the documented "NULL / empty relation -> no rows" behaviour; the
+# in-process JUnit suite covers the zero-row-batch path that yields a blank PNG.
+
+query I
+SELECT count(*)
+FROM chart.chart_line((SELECT x, y FROM points WHERE x < 0), x := 'x', y := 'y');
+----
+0
+
+# ---- exactly one PNG row per single-batch relation --------------------------
+
+query I
+SELECT count(*) FROM chart.chart_bar((SELECT category, value FROM cats),
+                                     category := 'category', value := 'value');
+----
+1
+
+statement ok
+DETACH chart;
