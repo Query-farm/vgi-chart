@@ -23,23 +23,49 @@ public final class ChartScatterFunction extends ChartFunction {
     @Override public String name() { return "chart_scatter"; }
 
     @Override public FunctionMetadata metadata() {
-        return FunctionMetadata.describe(
-                        "Render a scatter plot from an input relation to a PNG image BLOB (JFreeChart). "
-                                + "With a series column, one point series per series value.")
-                .withCategories("chart", "visualization", "jfreechart")
-                .withTag("vgi.columns_md", COLUMNS_MD)
-                .withTag("vgi.example_queries", exampleQueriesTag(
-                        "SELECT octet_length(png) AS bytes\n"
-                                + "FROM chart.main.chart_scatter(\n"
-                                + "  (SELECT * FROM (VALUES (1.0, 2.1), (2.0, 3.9), (3.0, 6.2)) AS t(x, y)),\n"
-                                + "  x := 'x', y := 'y', title := 'x vs y');",
-                        "Render a scatter plot of numeric x/y points and report the PNG byte size.",
-                        "SELECT png\n"
-                                + "FROM chart.main.chart_scatter(\n"
-                                + "  (SELECT height_cm, weight_kg, cohort FROM measurements),\n"
-                                + "  x := 'height_cm', y := 'weight_kg', series := 'cohort',\n"
-                                + "  title := 'Height vs weight by cohort');",
-                        "Render one colored point series per cohort of height against weight."));
+        java.util.Map<String, String> tags = objectTags(
+                        "Scatter Plot Renderer",
+                        "Render a **scatter plot** as a PNG image BLOB from a DuckDB relation. Name "
+                                + "the numeric `x` and `y` columns; supply an optional `series` "
+                                + "column to draw one colored point series per distinct series "
+                                + "value, plus optional `title`, `width`, and `height`.\n\n"
+                                + "Use it to inspect the relationship or correlation between two "
+                                + "numeric variables, or to compare clusters across groups via the "
+                                + "series column. Both x and y must be numeric; rows with NULL x or "
+                                + "y are skipped. Returns a single `(png BLOB)` row holding the "
+                                + "rendered PNG.",
+                        "## chart_scatter\n\n"
+                                + "Render a **scatter plot** from a query result to a PNG image "
+                                + "BLOB.\n\n"
+                                + "### Usage\n\n"
+                                + "```sql\n"
+                                + "SELECT png FROM chart.main.chart_scatter(\n"
+                                + "  (SELECT x, y FROM points),\n"
+                                + "  x := 'x', y := 'y', series := 'group', title := 'x vs y');\n"
+                                + "```\n\n"
+                                + "### Notes\n\n"
+                                + "- Both `x` and `y` must be numeric.\n"
+                                + "- With `series`, one point series is drawn per distinct value; "
+                                + "NULL x/y rows are ignored.",
+                        "scatter plot, scatter chart, xy plot, correlation, points, cluster, "
+                                + "png, jfreechart, chart, visualization",
+                        "ChartScatterFunction.java");
+        tags.put("vgi.example_queries", exampleQueriesTag(
+                "Render a scatter plot of numeric x/y points and report the PNG byte size.",
+                "SELECT octet_length(png) AS bytes FROM chart.main.chart_scatter("
+                        + "(SELECT * FROM (VALUES (1.0, 2.1), (2.0, 3.9), (3.0, 6.2)) AS t(x, y)), "
+                        + "x := 'x', y := 'y', title := 'x vs y')",
+                "Render one colored point series per cohort of height against weight.",
+                "SELECT octet_length(png) AS bytes FROM chart.main.chart_scatter("
+                        + "(SELECT * FROM (VALUES (170.0, 65.0, 'A'), (180.0, 80.0, 'A'), "
+                        + "(160.0, 55.0, 'B'), (175.0, 72.0, 'B')) AS t(height_cm, weight_kg, cohort)), "
+                        + "x := 'height_cm', y := 'weight_kg', series := 'cohort', "
+                        + "title := 'Height vs weight by cohort')"));
+        return baseMetadata(
+                "Render a scatter plot from an input relation to a PNG image BLOB (JFreeChart). "
+                        + "With a series column, one point series per series value.",
+                tags)
+                .withCategories("chart", "visualization", "jfreechart");
     }
 
     @Override public List<ArgSpec> argumentSpecs() {

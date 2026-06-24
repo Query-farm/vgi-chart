@@ -1,6 +1,7 @@
 package farm.query.vgi.chart;
 
 import farm.query.vgi.function.ArgSpec;
+import farm.query.vgi.function.FunctionMetadata;
 import farm.query.vgi.internal.SchemaUtil;
 import farm.query.vgi.protocol.BindResponse;
 import farm.query.vgi.tableinout.TableInOutBindParams;
@@ -14,6 +15,9 @@ import farm.query.vgirpc.wire.Allocators;
 import org.apache.arrow.vector.VarBinaryVector;
 import org.apache.arrow.vector.VectorSchemaRoot;
 import org.jfree.chart.JFreeChart;
+
+import java.util.LinkedHashMap;
+import java.util.Map;
 
 /**
  * Base for the buffering chart TABLE-IN-OUT functions. Each consumes the streamed
@@ -34,29 +38,70 @@ import org.jfree.chart.JFreeChart;
  */
 public abstract class ChartFunction implements TableInOutFunction {
 
+    /** Base GitHub blob URL for source files in this repo (pinned to {@code main}). */
+    private static final String SOURCE_BASE =
+            "https://github.com/Query-farm/vgi-chart/blob/main/"
+            + "src/main/java/farm/query/vgi/chart";
+
+    /** Build the {@code vgi.source_url} for a file under the chart package. */
+    protected static String sourceUrl(String fileName) {
+        return SOURCE_BASE + "/" + fileName;
+    }
+
     /**
      * Markdown table describing the (static) returned columns, shared by every
      * chart function — each emits a single {@code (png BLOB)} row. Advertised via
-     * the {@code vgi.columns_md} function tag.
+     * the {@code vgi.result_columns_md} function tag (VGI114).
      */
     protected static final String COLUMNS_MD =
             "| column | type | description |\n"
             + "|---|---|---|\n"
-            + "| `png` | BLOB | The rendered chart as a PNG image. |";
+            + "| `png` | BLOB | The rendered chart as a PNG image, ready to write to a "
+            + "`.png` file, embed in HTML, or hand to an image viewer. |";
 
     /**
-     * Encode example queries as the reserved {@code vgi.example_queries} tag — a
-     * JSON array of {@code {"sql","description"}} objects. The vgi extension does
-     * not surface a table-in-out function's native {@code Meta.examples} into
-     * {@code duckdb_functions().examples}, so this tag is the carrier the metadata
-     * linter (and agents) read. {@code pairs} is [sql0, desc0, sql1, desc1, ...].
+     * Build the standard per-object discovery/description tags every chart
+     * function carries: {@code vgi.title} (VGI124), {@code vgi.doc_llm} (VGI112),
+     * {@code vgi.doc_md} (VGI113), {@code vgi.keywords} (VGI126),
+     * {@code vgi.source_url} (VGI128), and {@code vgi.result_columns_md}. The
+     * title MUST NOT normalize-equal the machine name (VGI125), so each caller
+     * passes a multi-word display name.
+     */
+    protected static Map<String, String> objectTags(
+            String title, String docLlm, String docMd, String keywords, String fileName) {
+        Map<String, String> t = new LinkedHashMap<>();
+        t.put("vgi.title", title);
+        t.put("vgi.doc_llm", docLlm);
+        t.put("vgi.doc_md", docMd);
+        t.put("vgi.keywords", keywords);
+        t.put("vgi.source_url", sourceUrl(fileName));
+        t.put("vgi.result_columns_md", COLUMNS_MD);
+        return t;
+    }
+
+    /**
+    /**
+     * Convenience: produce a base {@link FunctionMetadata} carrying the standard
+     * per-object tags, so subclasses just add categories. Examples are carried by
+     * the {@code vgi.example_queries} tag (the linter does not surface a
+     * table-in-out function's native {@code Meta.examples}).
+     */
+    protected static FunctionMetadata baseMetadata(String description, Map<String, String> tags) {
+        return FunctionMetadata.describe(description).withTags(tags);
+    }
+
+    /**
+     * Encode examples as a JSON array of {@code {"description","sql"}} objects for
+     * the {@code vgi.example_queries} / {@code vgi.executable_examples} tags. Each
+     * SQL is self-contained and catalog-qualified. {@code pairs} is
+     * [desc0, sql0, desc1, sql1, ...]; {@code expected_result} is omitted.
      */
     protected static String exampleQueriesTag(String... pairs) {
         StringBuilder sb = new StringBuilder("[");
         for (int i = 0; i + 1 < pairs.length; i += 2) {
             if (i > 0) sb.append(',');
-            sb.append("{\"sql\":").append(jsonString(pairs[i]))
-              .append(",\"description\":").append(jsonString(pairs[i + 1])).append('}');
+            sb.append("{\"description\":").append(jsonString(pairs[i]))
+              .append(",\"sql\":").append(jsonString(pairs[i + 1])).append('}');
         }
         return sb.append(']').toString();
     }

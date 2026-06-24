@@ -23,23 +23,48 @@ public final class ChartHistogramFunction extends ChartFunction {
     @Override public String name() { return "chart_histogram"; }
 
     @Override public FunctionMetadata metadata() {
-        return FunctionMetadata.describe(
-                        "Render a histogram of a numeric column to a PNG image BLOB (JFreeChart), "
-                                + "binning the values into `bins` equal-width buckets.")
-                .withCategories("chart", "visualization", "jfreechart")
-                .withTag("vgi.columns_md", COLUMNS_MD)
-                .withTag("vgi.example_queries", exampleQueriesTag(
-                        "SELECT octet_length(png) AS bytes\n"
-                                + "FROM chart.main.chart_histogram(\n"
-                                + "  (SELECT * FROM (VALUES (1.0), (1.5), (2.0), (2.0), (3.5)) AS t(value)),\n"
-                                + "  value := 'value', bins := 5, title := 'Distribution');",
-                        "Bin five values into 5 equal-width buckets and report the PNG byte size.",
-                        "SELECT png\n"
-                                + "FROM chart.main.chart_histogram(\n"
-                                + "  (SELECT latency_ms FROM requests),\n"
-                                + "  value := 'latency_ms', bins := 30,\n"
-                                + "  title := 'Latency distribution', width := 900, height := 500);",
-                        "Render a 30-bucket histogram of request latency as a 900x500 PNG."));
+        java.util.Map<String, String> tags = objectTags(
+                        "Histogram Chart Renderer",
+                        "Render a **histogram** as a PNG image BLOB from a DuckDB relation. Name "
+                                + "the numeric `value` column and optionally set `bins` (the number "
+                                + "of equal-width buckets, default 20), plus optional `title`, "
+                                + "`width`, and `height`.\n\n"
+                                + "Use it to visualize the distribution of a single numeric variable "
+                                + "— latencies, prices, measurement spreads — by counting how many "
+                                + "values fall into each bucket between the observed min and max. "
+                                + "Rows with a NULL value are skipped; `bins` <= 0 falls back to 20. "
+                                + "Returns a single `(png BLOB)` row holding the rendered PNG.",
+                        "## chart_histogram\n\n"
+                                + "Render a **histogram** of a numeric column to a PNG image BLOB.\n\n"
+                                + "### Usage\n\n"
+                                + "```sql\n"
+                                + "SELECT png FROM chart.main.chart_histogram(\n"
+                                + "  (SELECT value FROM samples),\n"
+                                + "  value := 'value', bins := 20, title := 'Distribution');\n"
+                                + "```\n\n"
+                                + "### Notes\n\n"
+                                + "- Values are binned into `bins` equal-width buckets across the "
+                                + "observed range.\n"
+                                + "- `value` must be numeric; NULL values are ignored and "
+                                + "`bins <= 0` defaults to 20.",
+                        "histogram, distribution, frequency, bins, buckets, density, spread, "
+                                + "png, jfreechart, chart, visualization",
+                        "ChartHistogramFunction.java");
+        tags.put("vgi.example_queries", exampleQueriesTag(
+                "Bin five values into 5 equal-width buckets and report the PNG byte size.",
+                "SELECT octet_length(png) AS bytes FROM chart.main.chart_histogram("
+                        + "(SELECT * FROM (VALUES (1.0), (1.5), (2.0), (2.0), (3.5)) AS t(value)), "
+                        + "value := 'value', bins := 5, title := 'Distribution')",
+                "Render a 30-bucket histogram of request latency as a 900x500 PNG.",
+                "SELECT octet_length(png) AS bytes FROM chart.main.chart_histogram("
+                        + "(SELECT * FROM (VALUES (12.0), (15.0), (15.0), (22.0), (30.0), (45.0), (9.0)) "
+                        + "AS t(latency_ms)), value := 'latency_ms', bins := 30, "
+                        + "title := 'Latency distribution', width := 900, height := 500)"));
+        return baseMetadata(
+                "Render a histogram of a numeric column to a PNG image BLOB (JFreeChart), "
+                        + "binning the values into `bins` equal-width buckets.",
+                tags)
+                .withCategories("chart", "visualization", "jfreechart");
     }
 
     @Override public List<ArgSpec> argumentSpecs() {

@@ -35,23 +35,55 @@ public final class ChartLineFunction extends ChartFunction {
     @Override public String name() { return "chart_line"; }
 
     @Override public FunctionMetadata metadata() {
-        return FunctionMetadata.describe(
-                        "Render a line chart from an input relation to a PNG image BLOB (JFreeChart). "
-                                + "With a series column, one line per series value.")
-                .withCategories("chart", "visualization", "jfreechart")
-                .withTag("vgi.columns_md", COLUMNS_MD)
-                .withTag("vgi.example_queries", exampleQueriesTag(
-                        "SELECT octet_length(png) AS bytes\n"
-                                + "FROM chart.main.chart_line(\n"
-                                + "  (SELECT * FROM (VALUES (1, 10), (2, 25), (3, 18), (4, 30)) AS t(x, y)),\n"
-                                + "  x := 'x', y := 'y', title := 'Trend');",
-                        "Render a single line over numeric x/y points and report the PNG byte size.",
-                        "SELECT png\n"
-                                + "FROM chart.main.chart_line(\n"
-                                + "  (SELECT month, revenue, region FROM monthly_sales),\n"
-                                + "  x := 'month', y := 'revenue', series := 'region',\n"
-                                + "  title := 'Revenue by region', width := 1000, height := 600);",
-                        "Render one line per region (series) of revenue over months as a 1000x600 PNG."));
+        java.util.Map<String, String> tags = objectTags(
+                        "Line Chart Renderer",
+                        "Render a **line chart** as a PNG image BLOB from a DuckDB relation. "
+                                + "Pass the relation as the table argument and name the `x` and `y` "
+                                + "columns; supply an optional `series` column to draw one line per "
+                                + "distinct series value, and optional `title`, `width`, and "
+                                + "`height`.\n\n"
+                                + "Use it when you have an ordered or time-like x axis and want to "
+                                + "show a trend or compare several series over a common x. The x "
+                                + "axis is numeric when the x column is numeric (including DATE / "
+                                + "TIMESTAMP / DECIMAL), otherwise it becomes a category axis. "
+                                + "Rows where x or y is NULL are skipped. Returns a single "
+                                + "`(png BLOB)` row holding the rendered PNG.",
+                        "## chart_line\n\n"
+                                + "Render a **line chart** from a query result to a PNG image BLOB.\n\n"
+                                + "### Usage\n\n"
+                                + "```sql\n"
+                                + "SELECT png FROM chart.main.chart_line(\n"
+                                + "  (SELECT x, y FROM points),\n"
+                                + "  x := 'x', y := 'y', series := 'group',\n"
+                                + "  title := 'Trend', width := 800, height := 600);\n"
+                                + "```\n\n"
+                                + "### Notes\n\n"
+                                + "- A numeric x column yields a numeric axis; a text x column "
+                                + "yields a category axis.\n"
+                                + "- With `series`, one line is drawn per distinct series value.\n"
+                                + "- Rows with NULL x or y are ignored; an empty relation yields no "
+                                + "rows.",
+                        "line chart, line graph, trend, time series, series, plot, visualization, "
+                                + "png, jfreechart, chart",
+                        "ChartLineFunction.java");
+        String examplesJson = exampleQueriesTag(
+                "Render a single line over numeric x/y points and report the PNG byte size.",
+                "SELECT octet_length(png) AS bytes FROM chart.main.chart_line("
+                        + "(SELECT * FROM (VALUES (1, 10), (2, 25), (3, 18), (4, 30)) AS t(x, y)), "
+                        + "x := 'x', y := 'y', title := 'Trend')",
+                "Render one line per region (series) of revenue over months and report its PNG byte size.",
+                "SELECT octet_length(png) AS bytes FROM chart.main.chart_line("
+                        + "(SELECT * FROM (VALUES ('Jan', 100, 'East'), ('Feb', 140, 'East'), "
+                        + "('Jan', 80, 'West'), ('Feb', 95, 'West')) AS t(month, revenue, region)), "
+                        + "x := 'month', y := 'revenue', series := 'region', title := 'Revenue by region')");
+        tags.put("vgi.example_queries", examplesJson);
+        // VGI509: ship at least one guaranteed-runnable executable example.
+        tags.put("vgi.executable_examples", examplesJson);
+        return baseMetadata(
+                "Render a line chart from an input relation to a PNG image BLOB (JFreeChart). "
+                        + "With a series column, one line per series value.",
+                tags)
+                .withCategories("chart", "visualization", "jfreechart");
     }
 
     @Override public List<ArgSpec> argumentSpecs() {

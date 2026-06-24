@@ -23,23 +23,51 @@ public final class ChartBarFunction extends ChartFunction {
     @Override public String name() { return "chart_bar"; }
 
     @Override public FunctionMetadata metadata() {
-        return FunctionMetadata.describe(
-                        "Render a bar chart from an input relation to a PNG image BLOB (JFreeChart). "
-                                + "With a series column, bars are grouped per series value.")
-                .withCategories("chart", "visualization", "jfreechart")
-                .withTag("vgi.columns_md", COLUMNS_MD)
-                .withTag("vgi.example_queries", exampleQueriesTag(
-                        "SELECT octet_length(png) AS bytes\n"
-                                + "FROM chart.main.chart_bar(\n"
-                                + "  (SELECT * FROM (VALUES ('A', 30), ('B', 45), ('C', 12)) AS t(category, value)),\n"
-                                + "  category := 'category', value := 'value', title := 'Counts');",
-                        "Render one bar per category and report the PNG byte size.",
-                        "SELECT png\n"
-                                + "FROM chart.main.chart_bar(\n"
-                                + "  (SELECT quarter, units, product FROM sales),\n"
-                                + "  category := 'quarter', value := 'units', series := 'product',\n"
-                                + "  title := 'Units per quarter by product');",
-                        "Render grouped bars (one group per product series) of units by quarter."));
+        java.util.Map<String, String> tags = objectTags(
+                        "Bar Chart Renderer",
+                        "Render a **bar chart** as a PNG image BLOB from a DuckDB relation. Name "
+                                + "the `category` column (the discrete x-axis groups) and the "
+                                + "numeric `value` column; supply an optional `series` column to "
+                                + "draw grouped bars (one colored bar per series value within each "
+                                + "category), plus optional `title`, `width`, and `height`.\n\n"
+                                + "Use it to compare a numeric measure across discrete categories — "
+                                + "for example counts per status, revenue per quarter, or units per "
+                                + "product. Rows with a NULL category or value are skipped. Returns "
+                                + "a single `(png BLOB)` row holding the rendered PNG.",
+                        "## chart_bar\n\n"
+                                + "Render a **vertical bar chart** from a query result to a PNG "
+                                + "image BLOB.\n\n"
+                                + "### Usage\n\n"
+                                + "```sql\n"
+                                + "SELECT png FROM chart.main.chart_bar(\n"
+                                + "  (SELECT category, value FROM data),\n"
+                                + "  category := 'category', value := 'value',\n"
+                                + "  series := 'group', title := 'Counts');\n"
+                                + "```\n\n"
+                                + "### Notes\n\n"
+                                + "- One bar per category; with `series`, bars are grouped per "
+                                + "series value.\n"
+                                + "- The `value` column must be numeric; NULL category/value rows "
+                                + "are ignored.",
+                        "bar chart, bar graph, column chart, categories, grouped bars, comparison, "
+                                + "png, jfreechart, chart, visualization",
+                        "ChartBarFunction.java");
+        tags.put("vgi.example_queries", exampleQueriesTag(
+                "Render one bar per category and report the PNG byte size.",
+                "SELECT octet_length(png) AS bytes FROM chart.main.chart_bar("
+                        + "(SELECT * FROM (VALUES ('A', 30), ('B', 45), ('C', 12)) AS t(category, value)), "
+                        + "category := 'category', value := 'value', title := 'Counts')",
+                "Render grouped bars (one group per product series) of units by quarter.",
+                "SELECT octet_length(png) AS bytes FROM chart.main.chart_bar("
+                        + "(SELECT * FROM (VALUES ('Q1', 30, 'Widget'), ('Q2', 42, 'Widget'), "
+                        + "('Q1', 18, 'Gadget'), ('Q2', 25, 'Gadget')) AS t(quarter, units, product)), "
+                        + "category := 'quarter', value := 'units', series := 'product', "
+                        + "title := 'Units per quarter by product')"));
+        return baseMetadata(
+                "Render a bar chart from an input relation to a PNG image BLOB (JFreeChart). "
+                        + "With a series column, bars are grouped per series value.",
+                tags)
+                .withCategories("chart", "visualization", "jfreechart");
     }
 
     @Override public List<ArgSpec> argumentSpecs() {

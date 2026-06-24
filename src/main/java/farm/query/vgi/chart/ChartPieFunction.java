@@ -23,23 +23,46 @@ public final class ChartPieFunction extends ChartFunction {
     @Override public String name() { return "chart_pie"; }
 
     @Override public FunctionMetadata metadata() {
-        return FunctionMetadata.describe(
-                        "Render a pie chart from an input relation to a PNG image BLOB (JFreeChart). "
-                                + "One slice per distinct label; duplicate labels are summed.")
-                .withCategories("chart", "visualization", "jfreechart")
-                .withTag("vgi.columns_md", COLUMNS_MD)
-                .withTag("vgi.example_queries", exampleQueriesTag(
-                        "SELECT octet_length(png) AS bytes\n"
-                                + "FROM chart.main.chart_pie(\n"
-                                + "  (SELECT * FROM (VALUES ('Chrome', 65), ('Safari', 19), ('Firefox', 16)) AS t(label, value)),\n"
-                                + "  label := 'label', value := 'value', title := 'Browser share');",
-                        "Render a pie with one slice per label and report the PNG byte size.",
-                        "SELECT png\n"
-                                + "FROM chart.main.chart_pie(\n"
-                                + "  (SELECT category, amount FROM expenses),\n"
-                                + "  label := 'category', value := 'amount',\n"
-                                + "  title := 'Spend by category', width := 700, height := 700);",
-                        "Render spend per category as a 700x700 pie (duplicate categories are summed)."));
+        java.util.Map<String, String> tags = objectTags(
+                        "Pie Chart Renderer",
+                        "Render a **pie chart** as a PNG image BLOB from a DuckDB relation. Name "
+                                + "the `label` column (slice names) and the numeric `value` column "
+                                + "(slice sizes); supply optional `title`, `width`, and `height`.\n\n"
+                                + "Use it to show the composition of a whole — market share, budget "
+                                + "split, or category proportions. There is one slice per distinct "
+                                + "label, and rows that share a label are summed into a single "
+                                + "slice. Rows with a NULL label or value are skipped. Returns a "
+                                + "single `(png BLOB)` row holding the rendered PNG.",
+                        "## chart_pie\n\n"
+                                + "Render a **pie chart** from a query result to a PNG image BLOB.\n\n"
+                                + "### Usage\n\n"
+                                + "```sql\n"
+                                + "SELECT png FROM chart.main.chart_pie(\n"
+                                + "  (SELECT label, value FROM shares),\n"
+                                + "  label := 'label', value := 'value', title := 'Share');\n"
+                                + "```\n\n"
+                                + "### Notes\n\n"
+                                + "- One slice per distinct label; duplicate labels are summed.\n"
+                                + "- `value` must be numeric; NULL label/value rows are ignored.",
+                        "pie chart, donut, proportion, share, composition, percentage, slices, "
+                                + "png, jfreechart, chart, visualization",
+                        "ChartPieFunction.java");
+        tags.put("vgi.example_queries", exampleQueriesTag(
+                "Render a pie with one slice per label and report the PNG byte size.",
+                "SELECT octet_length(png) AS bytes FROM chart.main.chart_pie("
+                        + "(SELECT * FROM (VALUES ('Chrome', 65), ('Safari', 19), ('Firefox', 16)) AS t(label, value)), "
+                        + "label := 'label', value := 'value', title := 'Browser share')",
+                "Render spend per category as a 700x700 pie (duplicate categories are summed).",
+                "SELECT octet_length(png) AS bytes FROM chart.main.chart_pie("
+                        + "(SELECT * FROM (VALUES ('Rent', 1200), ('Food', 450), ('Rent', 100), "
+                        + "('Travel', 300)) AS t(category, amount)), "
+                        + "label := 'category', value := 'amount', "
+                        + "title := 'Spend by category', width := 700, height := 700)"));
+        return baseMetadata(
+                "Render a pie chart from an input relation to a PNG image BLOB (JFreeChart). "
+                        + "One slice per distinct label; duplicate labels are summed.",
+                tags)
+                .withCategories("chart", "visualization", "jfreechart");
     }
 
     @Override public List<ArgSpec> argumentSpecs() {

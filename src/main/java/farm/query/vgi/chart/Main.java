@@ -19,6 +19,33 @@ public final class Main {
 
     private Main() {}
 
+    /**
+     * Catalog/schema example queries as a JSON array of {@code {"description","sql"}}
+     * objects — the format {@code vgi.example_queries} requires. Each SQL is
+     * self-contained and catalog-qualified so it executes against the attached
+     * worker.
+     */
+    static final String EXAMPLE_QUERIES_JSON =
+            "["
+            + "{\"description\":\"Render a line chart from inline points.\","
+            + "\"sql\":\"SELECT octet_length(png) FROM chart.main.chart_line("
+            + "(SELECT * FROM (VALUES (1, 10), (2, 25), (3, 18)) AS t(x, y)), x := 'x', y := 'y')\"},"
+            + "{\"description\":\"Render a bar chart of category counts.\","
+            + "\"sql\":\"SELECT octet_length(png) FROM chart.main.chart_bar("
+            + "(SELECT * FROM (VALUES ('A', 30), ('B', 45)) AS t(category, value)), "
+            + "category := 'category', value := 'value')\"},"
+            + "{\"description\":\"Render a pie chart of two slices.\","
+            + "\"sql\":\"SELECT octet_length(png) FROM chart.main.chart_pie("
+            + "(SELECT * FROM (VALUES ('X', 65), ('Y', 35)) AS t(label, value)), "
+            + "label := 'label', value := 'value')\"},"
+            + "{\"description\":\"Render a scatter plot of numeric x/y points.\","
+            + "\"sql\":\"SELECT octet_length(png) FROM chart.main.chart_scatter("
+            + "(SELECT * FROM (VALUES (1.0, 2.1), (2.0, 3.9)) AS t(x, y)), x := 'x', y := 'y')\"},"
+            + "{\"description\":\"Render a 5-bin histogram of a numeric column.\","
+            + "\"sql\":\"SELECT octet_length(png) FROM chart.main.chart_histogram("
+            + "(SELECT * FROM (VALUES (1.0), (1.5), (2.0)) AS t(value)), value := 'value', bins := 5)\"}"
+            + "]";
+
     public static final String GIT_COMMIT =
             System.getenv("VGI_CHART_GIT_COMMIT") != null
                     ? System.getenv("VGI_CHART_GIT_COMMIT") : "unknown";
@@ -26,7 +53,11 @@ public final class Main {
     /** Catalog-level VGI metadata tags (LLM/Markdown docs, authorship, support). */
     static Map<String, String> catalogTags() {
         Map<String, String> t = new LinkedHashMap<>();
-        t.put("vgi.description_llm",
+        t.put("vgi.title", "Chart Rendering for SQL");
+        t.put("vgi.keywords",
+                "chart, charts, charting, plot, plotting, graph, visualization, png, image, "
+                + "line, bar, pie, scatter, histogram, jfreechart, dataviz");
+        t.put("vgi.doc_llm",
                 "Render a DuckDB query result into a chart as a PNG image BLOB. Five "
                 + "table-in-out functions — `chart_line`, `chart_bar`, `chart_pie`, "
                 + "`chart_scatter`, `chart_histogram` — each take a relation plus named "
@@ -34,7 +65,7 @@ public final class Main {
                 + "PNG. Use to visualize aggregates and series directly in SQL (e.g. a sales "
                 + "bar chart, a time series line, a value distribution histogram) without an "
                 + "external plotting tool. Rendered headless with JFreeChart via java.awt.");
-        t.put("vgi.description_md",
+        t.put("vgi.doc_md",
                 "# chart\n\n"
                 + "Render charts from a DuckDB query result into a **PNG image BLOB**, "
                 + "powered by [JFreeChart](https://www.jfree.org/jfreechart/).\n\n"
@@ -43,27 +74,45 @@ public final class Main {
                 + "- `chart_bar(TABLE, category, value, series, title, width, height)` — bar chart\n"
                 + "- `chart_pie(TABLE, label, value, title, width, height)` — pie chart\n"
                 + "- `chart_scatter(TABLE, x, y, series, title, width, height)` — scatter plot\n"
-                + "- `chart_histogram(TABLE, value, bins, title, width, height)` — histogram");
+                + "- `chart_histogram(TABLE, value, bins, title, width, height)` — histogram\n\n"
+                + "Each function takes the relation to plot as a table-valued first argument "
+                + "and returns the rendered chart as a single PNG BLOB.");
         t.put("vgi.author", "Query.Farm");
         t.put("vgi.copyright", "Copyright 2026 Query Farm LLC - https://query.farm");
         t.put("vgi.license", "MIT");
         t.put("vgi.support_contact", "https://github.com/Query-farm/vgi-chart/issues");
         t.put("vgi.support_policy_url",
                 "https://github.com/Query-farm/vgi-chart/blob/main/README.md");
+        t.put("vgi.example_queries", EXAMPLE_QUERIES_JSON);
         return t;
     }
 
     /** Schema-level VGI metadata tags for the single `main` schema. */
     static Map<String, String> mainSchemaTags() {
         Map<String, String> t = new LinkedHashMap<>();
-        t.put("vgi.description_llm",
+        t.put("vgi.title", "Chart Functions — main");
+        t.put("vgi.keywords",
+                "chart, chart_line, chart_bar, chart_pie, chart_scatter, chart_histogram, "
+                + "plot, graph, visualization, png, jfreechart");
+        // VGI123 classifying tags use BARE keys (NOT vgi.-namespaced).
+        t.put("domain", "data-visualization");
+        t.put("category", "charting");
+        t.put("topic", "chart-rendering");
+        t.put("vgi.source_url",
+                "https://github.com/Query-farm/vgi-chart/blob/main/"
+                + "src/main/java/farm/query/vgi/chart/Main.java");
+        t.put("vgi.doc_llm",
                 "Chart-rendering table-in-out functions: turn a relation into a PNG image "
                 + "BLOB. `chart_line`, `chart_bar`, `chart_pie`, `chart_scatter`, and "
                 + "`chart_histogram` each take an input relation plus named column arguments "
                 + "and return a single `(png BLOB)` row.");
-        t.put("vgi.description_md",
-                "Chart-rendering functions (line, bar, pie, scatter, histogram) that render a "
-                + "query result to a PNG image BLOB via JFreeChart.");
+        t.put("vgi.doc_md",
+                "## Chart functions\n\n"
+                + "Render a query result to a PNG image BLOB via JFreeChart. One function per "
+                + "chart type — line, bar, pie, scatter, histogram — each consuming a relation "
+                + "(table-valued argument) plus named column arguments and emitting a single "
+                + "`(png BLOB)` row.");
+        t.put("vgi.example_queries", EXAMPLE_QUERIES_JSON);
         return t;
     }
 
