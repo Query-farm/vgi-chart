@@ -26,7 +26,20 @@ public final class ChartBarFunction extends ChartFunction {
         return FunctionMetadata.describe(
                         "Render a bar chart from an input relation to a PNG image BLOB (JFreeChart). "
                                 + "With a series column, bars are grouped per series value.")
-                .withCategories("chart", "visualization", "jfreechart");
+                .withCategories("chart", "visualization", "jfreechart")
+                .withTag("vgi.columns_md", COLUMNS_MD)
+                .withTag("vgi.example_queries", exampleQueriesTag(
+                        "SELECT octet_length(png) AS bytes\n"
+                                + "FROM chart.main.chart_bar(\n"
+                                + "  (SELECT * FROM (VALUES ('A', 30), ('B', 45), ('C', 12)) AS t(category, value)),\n"
+                                + "  category := 'category', value := 'value', title := 'Counts');",
+                        "Render one bar per category and report the PNG byte size.",
+                        "SELECT png\n"
+                                + "FROM chart.main.chart_bar(\n"
+                                + "  (SELECT quarter, units, product FROM sales),\n"
+                                + "  category := 'quarter', value := 'units', series := 'product',\n"
+                                + "  title := 'Units per quarter by product');",
+                        "Render grouped bars (one group per product series) of units by quarter."));
     }
 
     @Override public List<ArgSpec> argumentSpecs() {

@@ -26,7 +26,20 @@ public final class ChartHistogramFunction extends ChartFunction {
         return FunctionMetadata.describe(
                         "Render a histogram of a numeric column to a PNG image BLOB (JFreeChart), "
                                 + "binning the values into `bins` equal-width buckets.")
-                .withCategories("chart", "visualization", "jfreechart");
+                .withCategories("chart", "visualization", "jfreechart")
+                .withTag("vgi.columns_md", COLUMNS_MD)
+                .withTag("vgi.example_queries", exampleQueriesTag(
+                        "SELECT octet_length(png) AS bytes\n"
+                                + "FROM chart.main.chart_histogram(\n"
+                                + "  (SELECT * FROM (VALUES (1.0), (1.5), (2.0), (2.0), (3.5)) AS t(value)),\n"
+                                + "  value := 'value', bins := 5, title := 'Distribution');",
+                        "Bin five values into 5 equal-width buckets and report the PNG byte size.",
+                        "SELECT png\n"
+                                + "FROM chart.main.chart_histogram(\n"
+                                + "  (SELECT latency_ms FROM requests),\n"
+                                + "  value := 'latency_ms', bins := 30,\n"
+                                + "  title := 'Latency distribution', width := 900, height := 500);",
+                        "Render a 30-bucket histogram of request latency as a 900x500 PNG."));
     }
 
     @Override public List<ArgSpec> argumentSpecs() {

@@ -26,7 +26,20 @@ public final class ChartPieFunction extends ChartFunction {
         return FunctionMetadata.describe(
                         "Render a pie chart from an input relation to a PNG image BLOB (JFreeChart). "
                                 + "One slice per distinct label; duplicate labels are summed.")
-                .withCategories("chart", "visualization", "jfreechart");
+                .withCategories("chart", "visualization", "jfreechart")
+                .withTag("vgi.columns_md", COLUMNS_MD)
+                .withTag("vgi.example_queries", exampleQueriesTag(
+                        "SELECT octet_length(png) AS bytes\n"
+                                + "FROM chart.main.chart_pie(\n"
+                                + "  (SELECT * FROM (VALUES ('Chrome', 65), ('Safari', 19), ('Firefox', 16)) AS t(label, value)),\n"
+                                + "  label := 'label', value := 'value', title := 'Browser share');",
+                        "Render a pie with one slice per label and report the PNG byte size.",
+                        "SELECT png\n"
+                                + "FROM chart.main.chart_pie(\n"
+                                + "  (SELECT category, amount FROM expenses),\n"
+                                + "  label := 'category', value := 'amount',\n"
+                                + "  title := 'Spend by category', width := 700, height := 700);",
+                        "Render spend per category as a 700x700 pie (duplicate categories are summed)."));
     }
 
     @Override public List<ArgSpec> argumentSpecs() {

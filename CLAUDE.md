@@ -73,9 +73,14 @@ Makefile                        build / test-unit / test-sql / test / clean
 
 ## SDK dependency & CI (self-contained via Maven Central)
 
-Depends on `farm.query:vgi:0.4.0` (pulls in `farm.query:vgirpc:0.10.2`
+Depends on `farm.query:vgi:0.5.0` (pulls in `farm.query:vgirpc:0.10.2`
 transitively; vgirpc declared explicitly since the code imports
-`farm.query.vgirpc.*`) and `org.jfree:jfreechart:1.5.5`. All **on Maven Central**,
+`farm.query.vgirpc.*`) and `org.jfree:jfreechart:1.5.5`. vgi 0.5.0 adds
+`Worker.schemaTags`, `FunctionMetadata.withTag(s)` and `withExamples`, used to
+carry the VGI metadata-quality tags (catalog/schema `vgi.description_*`,
+authorship/support tags, per-function `vgi.columns_md` + `vgi.example_queries`)
+that `vgi-lint --fail-on info` checks (0 findings; gated in CI's
+`metadata-quality` job). All **on Maven Central**,
 so the build is fully self-contained: no sibling checkout, no `mavenLocal`, no
 composite build. `.github/workflows/test.yml` is a single `build-and-test` job:
 JUnit + shadowJar + HTTP boot smoke test + `make test-sql`.

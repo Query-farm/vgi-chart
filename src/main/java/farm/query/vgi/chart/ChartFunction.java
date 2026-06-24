@@ -34,6 +34,52 @@ import org.jfree.chart.JFreeChart;
  */
 public abstract class ChartFunction implements TableInOutFunction {
 
+    /**
+     * Markdown table describing the (static) returned columns, shared by every
+     * chart function — each emits a single {@code (png BLOB)} row. Advertised via
+     * the {@code vgi.columns_md} function tag.
+     */
+    protected static final String COLUMNS_MD =
+            "| column | type | description |\n"
+            + "|---|---|---|\n"
+            + "| `png` | BLOB | The rendered chart as a PNG image. |";
+
+    /**
+     * Encode example queries as the reserved {@code vgi.example_queries} tag — a
+     * JSON array of {@code {"sql","description"}} objects. The vgi extension does
+     * not surface a table-in-out function's native {@code Meta.examples} into
+     * {@code duckdb_functions().examples}, so this tag is the carrier the metadata
+     * linter (and agents) read. {@code pairs} is [sql0, desc0, sql1, desc1, ...].
+     */
+    protected static String exampleQueriesTag(String... pairs) {
+        StringBuilder sb = new StringBuilder("[");
+        for (int i = 0; i + 1 < pairs.length; i += 2) {
+            if (i > 0) sb.append(',');
+            sb.append("{\"sql\":").append(jsonString(pairs[i]))
+              .append(",\"description\":").append(jsonString(pairs[i + 1])).append('}');
+        }
+        return sb.append(']').toString();
+    }
+
+    private static String jsonString(String s) {
+        StringBuilder sb = new StringBuilder("\"");
+        for (int i = 0; i < s.length(); i++) {
+            char c = s.charAt(i);
+            switch (c) {
+                case '"' -> sb.append("\\\"");
+                case '\\' -> sb.append("\\\\");
+                case '\n' -> sb.append("\\n");
+                case '\r' -> sb.append("\\r");
+                case '\t' -> sb.append("\\t");
+                default -> {
+                    if (c < 0x20) sb.append(String.format("\\u%04x", (int) c));
+                    else sb.append(c);
+                }
+            }
+        }
+        return sb.append('"').toString();
+    }
+
     /** Standard width/height named args shared by every chart type. */
     protected static ArgSpec widthArg() {
         return ArgSpec.named("width", farm.query.vgi.types.Schemas.INT64, "800");

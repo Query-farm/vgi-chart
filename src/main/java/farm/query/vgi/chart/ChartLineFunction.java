@@ -38,7 +38,20 @@ public final class ChartLineFunction extends ChartFunction {
         return FunctionMetadata.describe(
                         "Render a line chart from an input relation to a PNG image BLOB (JFreeChart). "
                                 + "With a series column, one line per series value.")
-                .withCategories("chart", "visualization", "jfreechart");
+                .withCategories("chart", "visualization", "jfreechart")
+                .withTag("vgi.columns_md", COLUMNS_MD)
+                .withTag("vgi.example_queries", exampleQueriesTag(
+                        "SELECT octet_length(png) AS bytes\n"
+                                + "FROM chart.main.chart_line(\n"
+                                + "  (SELECT * FROM (VALUES (1, 10), (2, 25), (3, 18), (4, 30)) AS t(x, y)),\n"
+                                + "  x := 'x', y := 'y', title := 'Trend');",
+                        "Render a single line over numeric x/y points and report the PNG byte size.",
+                        "SELECT png\n"
+                                + "FROM chart.main.chart_line(\n"
+                                + "  (SELECT month, revenue, region FROM monthly_sales),\n"
+                                + "  x := 'month', y := 'revenue', series := 'region',\n"
+                                + "  title := 'Revenue by region', width := 1000, height := 600);",
+                        "Render one line per region (series) of revenue over months as a 1000x600 PNG."));
     }
 
     @Override public List<ArgSpec> argumentSpecs() {

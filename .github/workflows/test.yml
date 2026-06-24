@@ -128,3 +128,35 @@ jobs:
         run: ci/run-integration.sh
         env:
           TRANSPORT: ${{ matrix.transport }}
+
+  # Metadata quality gate: build the worker fat JAR (same as the integration job)
+  # and lint the catalog/schema/function metadata via the signed vgi community
+  # extension. Kept as a separate, visible job. Fails on any finding >= info.
+  metadata-quality:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up JDK 21
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '21'
+          cache: gradle
+
+      - name: Build worker fat JAR
+        run: ./gradlew --no-daemon shadowJar
+
+      - name: Resolve worker launch command
+        run: |
+          # The fat JAR manifest sets Add-Opens, so a bare `java -jar` works as the
+          # VGI LOCATION (the linter spawns it as a subprocess over stdio).
+          JAR="$PWD/$(ls build/libs/vgi-chart-*-all.jar | head -1)"
+          echo "Worker JAR: $JAR"
+          echo "VGI_CHART_LOCATION=java -jar $JAR" >> "$GITHUB_ENV"
+
+      - name: vgi-lint
+        uses: Query-farm/vgi-lint-check@v1
+        with:
+          location: ${{ env.VGI_CHART_LOCATION }}
+          fail-on: info

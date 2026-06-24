@@ -26,7 +26,20 @@ public final class ChartScatterFunction extends ChartFunction {
         return FunctionMetadata.describe(
                         "Render a scatter plot from an input relation to a PNG image BLOB (JFreeChart). "
                                 + "With a series column, one point series per series value.")
-                .withCategories("chart", "visualization", "jfreechart");
+                .withCategories("chart", "visualization", "jfreechart")
+                .withTag("vgi.columns_md", COLUMNS_MD)
+                .withTag("vgi.example_queries", exampleQueriesTag(
+                        "SELECT octet_length(png) AS bytes\n"
+                                + "FROM chart.main.chart_scatter(\n"
+                                + "  (SELECT * FROM (VALUES (1.0, 2.1), (2.0, 3.9), (3.0, 6.2)) AS t(x, y)),\n"
+                                + "  x := 'x', y := 'y', title := 'x vs y');",
+                        "Render a scatter plot of numeric x/y points and report the PNG byte size.",
+                        "SELECT png\n"
+                                + "FROM chart.main.chart_scatter(\n"
+                                + "  (SELECT height_cm, weight_kg, cohort FROM measurements),\n"
+                                + "  x := 'height_cm', y := 'weight_kg', series := 'cohort',\n"
+                                + "  title := 'Height vs weight by cohort');",
+                        "Render one colored point series per cohort of height against weight."));
     }
 
     @Override public List<ArgSpec> argumentSpecs() {
