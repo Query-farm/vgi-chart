@@ -67,9 +67,15 @@ public final class ChartPieFunction extends ChartFunction {
 
     @Override public List<ArgSpec> argumentSpecs() {
         return List.of(
-                ArgSpec.table("input", 0),
-                ArgSpec.named("label", Schemas.UTF8, "label"),
-                ArgSpec.named("value", Schemas.UTF8, "value"),
+                tableArg("input", 0,
+                        "The input relation to plot. Its rows supply the pie slices; name "
+                        + "the columns to use with the `label` and `value` arguments."),
+                namedArg("label", Schemas.UTF8, "label",
+                        "Name of the column holding each slice's label. Rows that share a "
+                        + "label are summed into a single slice."),
+                namedArg("value", Schemas.UTF8, "value",
+                        "Name of the column giving each slice's size (summed per distinct "
+                        + "label)."),
                 titleArg(), widthArg(), heightArg());
     }
 

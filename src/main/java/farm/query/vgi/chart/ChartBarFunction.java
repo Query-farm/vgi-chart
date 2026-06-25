@@ -72,10 +72,20 @@ public final class ChartBarFunction extends ChartFunction {
 
     @Override public List<ArgSpec> argumentSpecs() {
         return List.of(
-                ArgSpec.table("input", 0),
-                ArgSpec.named("category", Schemas.UTF8, "category"),
-                ArgSpec.named("value", Schemas.UTF8, "value"),
-                ArgSpec.named("series", Schemas.UTF8, ""),
+                tableArg("input", 0,
+                        "The input relation to plot. Its rows supply the bars; name the "
+                        + "columns to use with the `category`, `value`, and optional `series` "
+                        + "arguments."),
+                namedArg("category", Schemas.UTF8, "category",
+                        "Name of the column holding the discrete category for each bar (the "
+                        + "x-axis groups)."),
+                namedArg("value", Schemas.UTF8, "value",
+                        "Name of the column giving each bar's height (the measure being "
+                        + "compared across categories)."),
+                namedArg("series", Schemas.UTF8, "",
+                        "Optional name of a grouping column; bars are grouped with one "
+                        + "colored bar per distinct value within each category. Empty (the "
+                        + "default) draws a single bar per category."),
                 titleArg(), widthArg(), heightArg());
     }
 

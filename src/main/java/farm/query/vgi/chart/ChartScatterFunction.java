@@ -70,10 +70,18 @@ public final class ChartScatterFunction extends ChartFunction {
 
     @Override public List<ArgSpec> argumentSpecs() {
         return List.of(
-                ArgSpec.table("input", 0),
-                ArgSpec.named("x", Schemas.UTF8, "x"),
-                ArgSpec.named("y", Schemas.UTF8, "y"),
-                ArgSpec.named("series", Schemas.UTF8, ""),
+                tableArg("input", 0,
+                        "The input relation to plot. Its rows supply the points; name the "
+                        + "columns to use with the `x`, `y`, and optional `series` "
+                        + "arguments."),
+                namedArg("x", Schemas.UTF8, "x",
+                        "Name of the column to use for the x coordinate of each point."),
+                namedArg("y", Schemas.UTF8, "y",
+                        "Name of the column to use for the y coordinate of each point."),
+                namedArg("series", Schemas.UTF8, "",
+                        "Optional name of a grouping column; one colored point series is "
+                        + "drawn per distinct value. Empty (the default) draws all points in "
+                        + "a single series."),
                 titleArg(), widthArg(), heightArg());
     }
 

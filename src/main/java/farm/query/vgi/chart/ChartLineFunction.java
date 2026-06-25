@@ -88,10 +88,20 @@ public final class ChartLineFunction extends ChartFunction {
 
     @Override public List<ArgSpec> argumentSpecs() {
         return List.of(
-                ArgSpec.table("input", 0),
-                ArgSpec.named("x", Schemas.UTF8, "x"),
-                ArgSpec.named("y", Schemas.UTF8, "y"),
-                ArgSpec.named("series", Schemas.UTF8, ""),
+                tableArg("input", 0,
+                        "The input relation to plot. Its rows supply the data points; name "
+                        + "the columns to use with the `x`, `y`, and optional `series` "
+                        + "arguments."),
+                namedArg("x", Schemas.UTF8, "x",
+                        "Name of the column to use for the x axis. An ordered or time-like "
+                        + "column yields a continuous axis; a label column yields a category "
+                        + "axis."),
+                namedArg("y", Schemas.UTF8, "y",
+                        "Name of the column whose measure is plotted on the y axis for each "
+                        + "x position."),
+                namedArg("series", Schemas.UTF8, "",
+                        "Optional name of a grouping column; one line is drawn per distinct "
+                        + "value in this column. Empty (the default) draws a single line."),
                 titleArg(), widthArg(), heightArg());
     }
 

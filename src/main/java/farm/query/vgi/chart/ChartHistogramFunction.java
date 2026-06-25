@@ -69,9 +69,14 @@ public final class ChartHistogramFunction extends ChartFunction {
 
     @Override public List<ArgSpec> argumentSpecs() {
         return List.of(
-                ArgSpec.table("input", 0),
-                ArgSpec.named("value", Schemas.UTF8, "value"),
-                ArgSpec.named("bins", Schemas.INT64, "20"),
+                tableArg("input", 0,
+                        "The input relation to plot. Its rows supply the samples; name the "
+                        + "column to bin with the `value` argument."),
+                namedArg("value", Schemas.UTF8, "value",
+                        "Name of the column whose value distribution is binned and counted."),
+                namedArg("bins", Schemas.INT64, "20",
+                        "Number of equal-width buckets to divide the observed value range "
+                        + "into (default 20). Values of 0 or less fall back to 20."),
                 titleArg(), widthArg(), heightArg());
     }
 

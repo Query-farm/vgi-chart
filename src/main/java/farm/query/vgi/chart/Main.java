@@ -54,9 +54,9 @@ public final class Main {
     static Map<String, String> catalogTags() {
         Map<String, String> t = new LinkedHashMap<>();
         t.put("vgi.title", "Chart Rendering for SQL");
-        t.put("vgi.keywords",
+        t.put("vgi.keywords", ChartFunction.keywordsJson(
                 "chart, charts, charting, plot, plotting, graph, visualization, png, image, "
-                + "line, bar, pie, scatter, histogram, jfreechart, dataviz");
+                + "line, bar, pie, scatter, histogram, jfreechart, dataviz"));
         t.put("vgi.doc_llm",
                 "Render a DuckDB query result into a chart as a PNG image BLOB. Five "
                 + "table-in-out functions — `chart_line`, `chart_bar`, `chart_pie`, "
@@ -91,16 +91,15 @@ public final class Main {
     static Map<String, String> mainSchemaTags() {
         Map<String, String> t = new LinkedHashMap<>();
         t.put("vgi.title", "Chart Functions — main");
-        t.put("vgi.keywords",
+        t.put("vgi.keywords", ChartFunction.keywordsJson(
                 "chart, chart_line, chart_bar, chart_pie, chart_scatter, chart_histogram, "
-                + "plot, graph, visualization, png, jfreechart");
+                + "plot, graph, visualization, png, jfreechart"));
         // VGI123 classifying tags use BARE keys (NOT vgi.-namespaced).
         t.put("domain", "data-visualization");
         t.put("category", "charting");
         t.put("topic", "chart-rendering");
-        t.put("vgi.source_url",
-                "https://github.com/Query-farm/vgi-chart/blob/main/"
-                + "src/main/java/farm/query/vgi/chart/Main.java");
+        // VGI139: per-object vgi.source_url is intentionally not set; the source
+        // URL lives only on the catalog object (Worker.builder().sourceUrl(...)).
         t.put("vgi.doc_llm",
                 "Chart-rendering table-in-out functions: turn a relation into a PNG image "
                 + "BLOB. `chart_line`, `chart_bar`, `chart_pie`, `chart_scatter`, and "

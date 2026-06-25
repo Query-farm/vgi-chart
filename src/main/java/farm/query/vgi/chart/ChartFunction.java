@@ -2,6 +2,7 @@ package farm.query.vgi.chart;
 
 import farm.query.vgi.function.ArgSpec;
 import farm.query.vgi.function.FunctionMetadata;
+import org.apache.arrow.vector.types.pojo.ArrowType;
 import farm.query.vgi.internal.SchemaUtil;
 import farm.query.vgi.protocol.BindResponse;
 import farm.query.vgi.tableinout.TableInOutBindParams;
@@ -38,16 +39,6 @@ import java.util.Map;
  */
 public abstract class ChartFunction implements TableInOutFunction {
 
-    /** Base GitHub blob URL for source files in this repo (pinned to {@code main}). */
-    private static final String SOURCE_BASE =
-            "https://github.com/Query-farm/vgi-chart/blob/main/"
-            + "src/main/java/farm/query/vgi/chart";
-
-    /** Build the {@code vgi.source_url} for a file under the chart package. */
-    protected static String sourceUrl(String fileName) {
-        return SOURCE_BASE + "/" + fileName;
-    }
-
     /**
      * Markdown table describing the (static) returned columns, shared by every
      * chart function — each emits a single {@code (png BLOB)} row. Advertised via
@@ -60,12 +51,33 @@ public abstract class ChartFunction implements TableInOutFunction {
             + "`.png` file, embed in HTML, or hand to an image viewer. |";
 
     /**
+     * Encode a comma-separated keyword list as a JSON array of strings, the form
+     * {@code vgi.keywords} requires (VGI138). Each keyword is trimmed; blanks are
+     * dropped. E.g. {@code "a, b"} becomes {@code ["a","b"]}.
+     */
+    static String keywordsJson(String csv) {
+        StringBuilder sb = new StringBuilder("[");
+        boolean first = true;
+        for (String kw : csv.split(",")) {
+            String k = kw.trim();
+            if (k.isEmpty()) continue;
+            if (!first) sb.append(',');
+            sb.append(jsonString(k));
+            first = false;
+        }
+        return sb.append(']').toString();
+    }
+
+    /**
      * Build the standard per-object discovery/description tags every chart
      * function carries: {@code vgi.title} (VGI124), {@code vgi.doc_llm} (VGI112),
-     * {@code vgi.doc_md} (VGI113), {@code vgi.keywords} (VGI126),
-     * {@code vgi.source_url} (VGI128), and {@code vgi.result_columns_md}. The
-     * title MUST NOT normalize-equal the machine name (VGI125), so each caller
-     * passes a multi-word display name.
+     * {@code vgi.doc_md} (VGI113), {@code vgi.keywords} (VGI126, as a JSON array
+     * per VGI138), and {@code vgi.result_columns_md}. The title MUST NOT
+     * normalize-equal the machine name (VGI125), so each caller passes a
+     * multi-word display name. Per-object {@code vgi.source_url} is intentionally
+     * NOT set (VGI139): the source URL lives only on the catalog object.
+     *
+     * @param fileName the source file (unused for tags; kept for caller context)
      */
     protected static Map<String, String> objectTags(
             String title, String docLlm, String docMd, String keywords, String fileName) {
@@ -73,8 +85,7 @@ public abstract class ChartFunction implements TableInOutFunction {
         t.put("vgi.title", title);
         t.put("vgi.doc_llm", docLlm);
         t.put("vgi.doc_md", docMd);
-        t.put("vgi.keywords", keywords);
-        t.put("vgi.source_url", sourceUrl(fileName));
+        t.put("vgi.keywords", keywordsJson(keywords));
         t.put("vgi.result_columns_md", COLUMNS_MD);
         return t;
     }
@@ -125,17 +136,70 @@ public abstract class ChartFunction implements TableInOutFunction {
         return sb.append('"').toString();
     }
 
-    /** Standard width/height named args shared by every chart type. */
+    /**
+     * Build a named (keyword) argument carrying a per-argument {@code doc}
+     * description (VGI312). The vgi {@link ArgSpec#named} factory leaves
+     * {@code doc} empty, so we go through the canonical constructor to attach it.
+     * Mirrors {@code named}: {@code position = -1}, no const, has a default value.
+     *
+     * @param name the keyword argument name (used as {@code name := value} in SQL)
+     * @param type the Arrow type the argument is coerced to
+     * @param defaultValue the SQL default applied when the argument is omitted
+     * @param doc a human/LLM-facing description of what the argument controls
+     */
+    protected static ArgSpec namedArg(String name, ArrowType type, String defaultValue, String doc) {
+        return new ArgSpec(
+                name, -1, type, doc,
+                /* isConst */ false, /* hasDefault */ true, defaultValue,
+                java.util.List.of(), /* varargs */ false, /* anyType */ false,
+                /* tableInput */ false);
+    }
+
+    /**
+     * Build the table-valued input argument carrying a per-argument {@code doc}
+     * description (VGI312). Mirrors the vgi {@link ArgSpec#table} factory (Null
+     * Arrow type, {@code tableInput = true}) but attaches a documentation string.
+     *
+     * @param name the argument name for the input relation
+     * @param position the positional index of the table argument (0 = first)
+     * @param doc a human/LLM-facing description of the relation to be charted
+     */
+    protected static ArgSpec tableArg(String name, int position, String doc) {
+        return new ArgSpec(
+                name, position, new ArrowType.Null(), doc,
+                /* isConst */ false, /* hasDefault */ false, "",
+                java.util.List.of(), /* varargs */ false, /* anyType */ false,
+                /* tableInput */ true);
+    }
+
+    /**
+     * Standard {@code width} named arg (pixels, default 800) shared by every chart
+     * type, with its per-argument doc (VGI312).
+     */
     protected static ArgSpec widthArg() {
-        return ArgSpec.named("width", farm.query.vgi.types.Schemas.INT64, "800");
+        return namedArg("width", farm.query.vgi.types.Schemas.INT64, "800",
+                "Width of the rendered PNG image in pixels (default 800). Larger "
+                + "values produce a higher-resolution chart.");
     }
 
+    /**
+     * Standard {@code height} named arg (pixels, default 600) shared by every chart
+     * type, with its per-argument doc (VGI312).
+     */
     protected static ArgSpec heightArg() {
-        return ArgSpec.named("height", farm.query.vgi.types.Schemas.INT64, "600");
+        return namedArg("height", farm.query.vgi.types.Schemas.INT64, "600",
+                "Height of the rendered PNG image in pixels (default 600). Larger "
+                + "values produce a higher-resolution chart.");
     }
 
+    /**
+     * Standard {@code title} named arg (default empty) shared by every chart type,
+     * with its per-argument doc (VGI312).
+     */
     protected static ArgSpec titleArg() {
-        return ArgSpec.named("title", farm.query.vgi.types.Schemas.UTF8, "");
+        return namedArg("title", farm.query.vgi.types.Schemas.UTF8, "",
+                "Optional chart title drawn above the plot. Defaults to empty (no "
+                + "title).");
     }
 
     @Override public BindResponse onBind(TableInOutBindParams p) {
