@@ -41,8 +41,7 @@ public final class ChartBarFunction extends ChartFunction {
                                 + "```sql\n"
                                 + "SELECT png FROM chart.main.chart_bar(\n"
                                 + "  (SELECT category, value FROM data),\n"
-                                + "  category := 'category', value := 'value',\n"
-                                + "  series := 'group', title := 'Counts');\n"
+                                + "  category := 'category', value := 'value', series := 'group', title := 'Counts');\n"
                                 + "```\n\n"
                                 + "### Notes\n\n"
                                 + "- One bar per category; with `series`, bars are grouped per "
@@ -63,6 +62,8 @@ public final class ChartBarFunction extends ChartFunction {
                         + "('Q1', 18, 'Gadget'), ('Q2', 25, 'Gadget')) AS t(quarter, units, product)), "
                         + "category := 'quarter', value := 'units', series := 'product', "
                         + "title := 'Units per quarter by product')"));
+        // VGI411: assign a category from the schema's vgi.categories registry.
+        tags.put("vgi.category", "categorical-comparisons");
         return baseMetadata(
                 "Render a bar chart from an input relation to a PNG image BLOB (JFreeChart). "
                         + "With a series column, bars are grouped per series value.",

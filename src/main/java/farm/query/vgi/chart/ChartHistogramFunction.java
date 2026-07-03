@@ -60,6 +60,8 @@ public final class ChartHistogramFunction extends ChartFunction {
                         + "(SELECT * FROM (VALUES (12.0), (15.0), (15.0), (22.0), (30.0), (45.0), (9.0)) "
                         + "AS t(latency_ms)), value := 'latency_ms', bins := 30, "
                         + "title := 'Latency distribution', width := 900, height := 500)"));
+        // VGI411: assign a category from the schema's vgi.categories registry.
+        tags.put("vgi.category", "distributions");
         return baseMetadata(
                 "Render a histogram of a numeric column to a PNG image BLOB (JFreeChart), "
                         + "binning the values into `bins` equal-width buckets.",

@@ -1,0 +1,11 @@
+# vgi-lint-check configuration for vgi-chart.
+#
+# This is a Java/JFreeChart worker: the FIRST chart render after attach pays a
+# one-time JVM cost (class-loading JFreeChart + java.awt font/graphics init)
+# before any pixels are drawn, so the first executed example runs noticeably
+# slower than a steady-state call. That cold-start is expected and not a
+# metadata defect, so raise the VGI908 "slow executable example" threshold to
+# leave headroom for it (the rule's own guidance: "raise slow_seconds if this
+# is expected"). Steady-state renders are well under a second.
+[tool.vgi-lint-check.execution]
+slow_seconds = 15

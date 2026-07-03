@@ -54,8 +54,7 @@ public final class ChartLineFunction extends ChartFunction {
                                 + "```sql\n"
                                 + "SELECT png FROM chart.main.chart_line(\n"
                                 + "  (SELECT x, y FROM points),\n"
-                                + "  x := 'x', y := 'y', series := 'group',\n"
-                                + "  title := 'Trend', width := 800, height := 600);\n"
+                                + "  x := 'x', y := 'y', series := 'group', title := 'Trend');\n"
                                 + "```\n\n"
                                 + "### Notes\n\n"
                                 + "- A numeric x column yields a numeric axis; a text x column "
@@ -79,6 +78,8 @@ public final class ChartLineFunction extends ChartFunction {
         tags.put("vgi.example_queries", examplesJson);
         // VGI509: ship at least one guaranteed-runnable executable example.
         tags.put("vgi.executable_examples", examplesJson);
+        // VGI411: assign a category from the schema's vgi.categories registry.
+        tags.put("vgi.category", "trends-and-relationships");
         return baseMetadata(
                 "Render a line chart from an input relation to a PNG image BLOB (JFreeChart). "
                         + "With a series column, one line per series value.",

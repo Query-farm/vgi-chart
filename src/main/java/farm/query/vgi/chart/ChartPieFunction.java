@@ -58,6 +58,8 @@ public final class ChartPieFunction extends ChartFunction {
                         + "('Travel', 300)) AS t(category, amount)), "
                         + "label := 'category', value := 'amount', "
                         + "title := 'Spend by category', width := 700, height := 700)"));
+        // VGI411: assign a category from the schema's vgi.categories registry.
+        tags.put("vgi.category", "categorical-comparisons");
         return baseMetadata(
                 "Render a pie chart from an input relation to a PNG image BLOB (JFreeChart). "
                         + "One slice per distinct label; duplicate labels are summed.",

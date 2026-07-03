@@ -61,6 +61,8 @@ public final class ChartScatterFunction extends ChartFunction {
                         + "(160.0, 55.0, 'B'), (175.0, 72.0, 'B')) AS t(height_cm, weight_kg, cohort)), "
                         + "x := 'height_cm', y := 'weight_kg', series := 'cohort', "
                         + "title := 'Height vs weight by cohort')"));
+        // VGI411: assign a category from the schema's vgi.categories registry.
+        tags.put("vgi.category", "trends-and-relationships");
         return baseMetadata(
                 "Render a scatter plot from an input relation to a PNG image BLOB (JFreeChart). "
                         + "With a series column, one point series per series value.",
