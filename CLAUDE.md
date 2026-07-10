@@ -23,6 +23,7 @@ src/main/java/farm/query/vgi/chart/
   ChartScatterFunction.java     chart_scatter(TABLE, x, y, series, title, width, height)
   ChartPieFunction.java         chart_pie(TABLE, label, value, title, width, height)
   ChartHistogramFunction.java   chart_histogram(TABLE, value, bins, title, width, height)
+  ChartTypesFunction.java       chart_types() -> browsable reference table (one row per chart type); also registered as a CatalogTable (VGI146/VGI311)
   ChartRenderer.java            JFreeChart builders (one per type) + toPng / blankPng (ImageIO -> PNG byte[])
   ChartSchemas.java             PNG_SCHEMA = single (png BINARY) column
   Columns.java                  named-column lookup + numeric/string coercion (clear error on non-numeric)
@@ -73,14 +74,15 @@ Makefile                        build / test-unit / test-sql / test / clean
 
 ## SDK dependency & CI (self-contained via Maven Central)
 
-Depends on `farm.query:vgi:0.5.0` (pulls in `farm.query:vgirpc:0.10.2`
+Depends on `farm.query:vgi:0.16.0` (pulls in `farm.query:vgirpc:0.15.0`
 transitively; vgirpc declared explicitly since the code imports
-`farm.query.vgirpc.*`) and `org.jfree:jfreechart:1.5.5`. vgi 0.5.0 adds
+`farm.query.vgirpc.*`) and `org.jfree:jfreechart:1.5.6`. The VGI SDK provides
 `Worker.schemaTags`, `FunctionMetadata.withTag(s)` and `withExamples`, used to
-carry the VGI metadata-quality tags (catalog/schema `vgi.description_*`,
-authorship/support tags, per-function `vgi.columns_md` + `vgi.example_queries`)
-that `vgi-lint --fail-on info` checks (0 findings; gated in CI's
-`metadata-quality` job). All **on Maven Central**,
+carry the VGI metadata-quality tags (catalog/schema `vgi.doc_llm`/`vgi.doc_md`,
+authorship/support tags, per-object `vgi.result_columns_schema` +
+`vgi.example_queries` + `vgi.agent_test_tasks`) that the latest `vgi-lint-check`
+(`Query-farm/vgi-lint-check@v1`, unpinned) checks at `--fail-on info` (0
+findings; gated in CI's `metadata-quality` job). All **on Maven Central**,
 so the build is fully self-contained: no sibling checkout, no `mavenLocal`, no
 composite build. `.github/workflows/test.yml` is a single `build-and-test` job:
 JUnit + shadowJar + HTTP boot smoke test + `make test-sql`.
@@ -114,4 +116,4 @@ JUnit (which uses explicit `Float8Vector` fixtures) and was caught only by E2E.
 
 ## Packaging
 
-~33 MB shaded JAR (JFreeChart 1.5.5, LGPL-2.1; VGI SDK + Apache Arrow dominate the size).
+~33 MB shaded JAR (JFreeChart 1.5.6, LGPL-2.1; VGI SDK + Apache Arrow dominate the size).

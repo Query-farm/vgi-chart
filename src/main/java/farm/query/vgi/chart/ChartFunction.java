@@ -40,15 +40,15 @@ import java.util.Map;
 public abstract class ChartFunction implements TableInOutFunction {
 
     /**
-     * Markdown table describing the (static) returned columns, shared by every
-     * chart function — each emits a single {@code (png BLOB)} row. Advertised via
-     * the {@code vgi.result_columns_md} function tag (VGI114).
+     * The (static) returned result schema, shared by every chart function — each
+     * emits a single {@code (png BLOB)} row. Advertised via the structured
+     * {@code vgi.result_columns_schema} function tag (VGI307/VGI321): a JSON array
+     * of {@code {name, type, description}} objects, one per returned column.
      */
-    protected static final String COLUMNS_MD =
-            "| column | type | description |\n"
-            + "|---|---|---|\n"
-            + "| `png` | BLOB | The rendered chart as a PNG image, ready to write to a "
-            + "`.png` file, embed in HTML, or hand to an image viewer. |";
+    protected static final String RESULT_COLUMNS_SCHEMA =
+            "[{\"name\":\"png\",\"type\":\"BLOB\",\"description\":"
+            + "\"The rendered chart as a PNG image (raw bytes), ready to write to a "
+            + ".png file with DuckDB's COPY, embed in HTML, or hand to an image viewer.\"}]";
 
     /**
      * Encode a comma-separated keyword list as a JSON array of strings, the form
@@ -72,7 +72,7 @@ public abstract class ChartFunction implements TableInOutFunction {
      * Build the standard per-object discovery/description tags every chart
      * function carries: {@code vgi.title} (VGI124), {@code vgi.doc_llm} (VGI112),
      * {@code vgi.doc_md} (VGI113), {@code vgi.keywords} (VGI126, as a JSON array
-     * per VGI138), and {@code vgi.result_columns_md}. The title MUST NOT
+     * per VGI138), and {@code vgi.result_columns_schema} (VGI307). The title MUST NOT
      * normalize-equal the machine name (VGI125), so each caller passes a
      * multi-word display name. Per-object {@code vgi.source_url} is intentionally
      * NOT set (VGI139): the source URL lives only on the catalog object.
@@ -86,7 +86,7 @@ public abstract class ChartFunction implements TableInOutFunction {
         t.put("vgi.doc_llm", docLlm);
         t.put("vgi.doc_md", docMd);
         t.put("vgi.keywords", keywordsJson(keywords));
-        t.put("vgi.result_columns_md", COLUMNS_MD);
+        t.put("vgi.result_columns_schema", RESULT_COLUMNS_SCHEMA);
         return t;
     }
 

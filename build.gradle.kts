@@ -36,17 +36,17 @@ dependencies {
     // VGI Java SDK from Maven Central. `vgi` is the worker/catalog API and pulls
     // in farm.query:vgirpc transitively; vgirpc is declared explicitly because
     // the code imports farm.query.vgirpc.* directly.
-    implementation("farm.query:vgi:0.10.0")
-    implementation("farm.query:vgirpc:0.12.0")
+    implementation("farm.query:vgi:0.16.0")
+    implementation("farm.query:vgirpc:0.15.0")
 
     // JFreeChart — LGPL-2.1. Used UNMODIFIED as a standard Maven Central
     // dependency to render charts to PNG via java.awt (headless). See the README
     // licensing table + LGPL note. Pulls in org.jfree:jcommon transitively.
-    implementation("org.jfree:jfreechart:1.5.5")
+    implementation("org.jfree:jfreechart:1.5.6")
 
-    implementation("org.slf4j:slf4j-simple:2.0.16")
+    implementation("org.slf4j:slf4j-simple:2.0.18")
 
-    testImplementation("org.junit.jupiter:junit-jupiter:5.11.4")
+    testImplementation("org.junit.jupiter:junit-jupiter:5.14.4")
     testRuntimeOnly("org.junit.platform:junit-platform-launcher")
 }
 

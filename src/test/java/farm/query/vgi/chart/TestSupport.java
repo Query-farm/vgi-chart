@@ -67,7 +67,7 @@ final class TestSupport {
         Arguments args = new Arguments(List.of(), named, List.of());
         TableInOutInitParams init = new TableInOutInitParams(
                 fn.name(), args, inputSchema, ChartSchemas.PNG_SCHEMA,
-                Map.of(), Allocators.root(), null);
+                Map.<String, Object>of(), Allocators.root(), null, null);
         TableInOutExchangeState state = fn.createExchange(init);
         OutputCollector collector = new OutputCollector(ChartSchemas.PNG_SCHEMA, "test", true);
 

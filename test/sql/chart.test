@@ -103,5 +103,19 @@ SELECT count(*) FROM chart.chart_bar((SELECT category, value FROM cats),
 ----
 1
 
+# ---- chart_types browsable reference table ----------------------------------
+# One row per chart function, scannable as a table (no parentheses) so an agent
+# can discover the available chart types before calling one.
+
+query I
+SELECT count(*) FROM chart.chart_types;
+----
+5
+
+query I
+SELECT category FROM chart.chart_types WHERE chart_type = 'chart_histogram';
+----
+distributions
+
 statement ok
 DETACH chart;

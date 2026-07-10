@@ -1,6 +1,8 @@
 package farm.query.vgi.chart;
 
 import farm.query.vgi.Worker;
+import farm.query.vgi.catalog.CatalogTable;
+import farm.query.vgi.internal.SchemaUtil;
 
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -103,6 +105,11 @@ public final class Main {
             + "chart.main.chart_histogram("
             + "(SELECT * FROM (VALUES (1.0), (1.5), (2.0), (2.5), (3.0)) AS t(value)), "
             + "value := 'value', bins := 5)\","
+            + "\"ignore_column_names\":true},"
+            + "{\"name\":\"chart type catalog count\","
+            + "\"prompt\":\"Using the chart worker's browsable catalog, find out how many "
+            + "distinct chart types it offers. Return that total as a single column.\","
+            + "\"reference_sql\":\"SELECT count(*) AS n FROM chart.main.chart_types()\","
             + "\"ignore_column_names\":true}"
             + "]";
 
@@ -222,10 +229,34 @@ public final class Main {
                 + "{\"name\":\"distributions\","
                 + "\"title\":\"Distributions\","
                 + "\"description\":\"Charts that summarize the shape and spread of a single "
-                + "numeric column by binning it into buckets.\"}"
+                + "numeric column by binning it into buckets.\"},"
+                + "{\"name\":\"reference\","
+                + "\"title\":\"Reference\","
+                + "\"description\":\"Browsable reference tables describing the worker's own "
+                + "chart types and the column arguments each one takes.\"}"
                 + "]");
         t.put("vgi.example_queries", EXAMPLE_QUERIES_JSON);
         return t;
+    }
+
+    /**
+     * The browsable {@code chart_types} reference table (VGI146/VGI311): scans the
+     * parameterless {@code chart_types} table function so consumers can write
+     * {@code SELECT * FROM chart.main.chart_types} (no parentheses). Shares the
+     * function's discovery tags and declared static result schema.
+     */
+    static CatalogTable chartTypesTable() {
+        return CatalogTable.builder(
+                        "main", "chart_types",
+                        SchemaUtil.serializeSchema(ChartSchemas.CHART_TYPES_SCHEMA))
+                .comment("One row per chart function this worker exposes, with its category, "
+                        + "a one-line summary, and the column arguments it takes.")
+                .tags(ChartTypesFunction.tags())
+                .scanFunction("chart_types")
+                .cardinality(ChartTypesFunction.ROWS.length, ChartTypesFunction.ROWS.length)
+                // VGI807/VGI806: chart_type uniquely identifies each reference row.
+                .primaryKey(java.util.List.of(java.util.List.of(0)))
+                .build();
     }
 
     public static Worker buildWorker() {
@@ -246,7 +277,13 @@ public final class Main {
                 .registerTableInOut(new ChartBarFunction())
                 .registerTableInOut(new ChartScatterFunction())
                 .registerTableInOut(new ChartPieFunction())
-                .registerTableInOut(new ChartHistogramFunction());
+                .registerTableInOut(new ChartHistogramFunction())
+                // A parameterless reference table function listing the chart types...
+                .registerTable(new ChartTypesFunction())
+                // ...also exposed as a browsable table so an agent can SELECT * FROM
+                // chart.main.chart_types to discover the chart types before calling one
+                // (VGI146/VGI311).
+                .registerCatalogTable(chartTypesTable());
     }
 
     public static void main(String[] args) {
