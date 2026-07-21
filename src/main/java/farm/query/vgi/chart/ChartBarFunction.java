@@ -25,7 +25,7 @@ public final class ChartBarFunction extends ChartFunction {
     @Override public FunctionMetadata metadata() {
         java.util.Map<String, String> tags = objectTags(
                         "Bar Chart Renderer",
-                        "Render a **bar chart** as a PNG image BLOB from a DuckDB relation. Name "
+                        "Render a **bar chart** as a PNG image `BLOB` from a DuckDB relation. Name "
                                 + "the `category` column (the discrete x-axis groups) and the "
                                 + "numeric `value` column; supply an optional `series` column to "
                                 + "draw grouped bars (one colored bar per series value within each "
@@ -36,7 +36,7 @@ public final class ChartBarFunction extends ChartFunction {
                                 + "a single `(png BLOB)` row holding the rendered PNG.",
                         "## chart_bar\n\n"
                                 + "Render a **vertical bar chart** from a query result to a PNG "
-                                + "image BLOB.\n\n"
+                                + "image `BLOB`.\n\n"
                                 + "### Usage\n\n"
                                 + "Pass the relation as the table argument, name the `category` "
                                 + "and `value` columns, and optionally add a `series` column plus "

@@ -25,7 +25,7 @@ public final class ChartHistogramFunction extends ChartFunction {
     @Override public FunctionMetadata metadata() {
         java.util.Map<String, String> tags = objectTags(
                         "Histogram Chart Renderer",
-                        "Render a **histogram** as a PNG image BLOB from a DuckDB relation. Name "
+                        "Render a **histogram** as a PNG image `BLOB` from a DuckDB relation. Name "
                                 + "the numeric `value` column and optionally set `bins` (the number "
                                 + "of equal-width buckets, default 20), plus optional `title`, "
                                 + "`width`, and `height`.\n\n"
@@ -35,7 +35,7 @@ public final class ChartHistogramFunction extends ChartFunction {
                                 + "Rows with a NULL value are skipped; `bins` <= 0 falls back to 20. "
                                 + "Returns a single `(png BLOB)` row holding the rendered PNG.",
                         "## chart_histogram\n\n"
-                                + "Render a **histogram** of a numeric column to a PNG image BLOB.\n\n"
+                                + "Render a **histogram** of a numeric column to a PNG image `BLOB`.\n\n"
                                 + "### Usage\n\n"
                                 + "Pass the relation as the table argument, name the numeric "
                                 + "`value` column, and optionally set `bins` plus `title`, "

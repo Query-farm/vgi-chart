@@ -25,7 +25,7 @@ public final class ChartScatterFunction extends ChartFunction {
     @Override public FunctionMetadata metadata() {
         java.util.Map<String, String> tags = objectTags(
                         "Scatter Plot Renderer",
-                        "Render a **scatter plot** as a PNG image BLOB from a DuckDB relation. Name "
+                        "Render a **scatter plot** as a PNG image `BLOB` from a DuckDB relation. Name "
                                 + "the numeric `x` and `y` columns; supply an optional `series` "
                                 + "column to draw one colored point series per distinct series "
                                 + "value, plus optional `title`, `width`, and `height`.\n\n"
@@ -36,7 +36,7 @@ public final class ChartScatterFunction extends ChartFunction {
                                 + "rendered PNG.",
                         "## chart_scatter\n\n"
                                 + "Render a **scatter plot** from a query result to a PNG image "
-                                + "BLOB.\n\n"
+                                + "`BLOB`.\n\n"
                                 + "### Usage\n\n"
                                 + "Pass the relation as the table argument, name the numeric `x` "
                                 + "and `y` columns, and optionally add a `series` column plus "

@@ -25,7 +25,7 @@ public final class ChartPieFunction extends ChartFunction {
     @Override public FunctionMetadata metadata() {
         java.util.Map<String, String> tags = objectTags(
                         "Pie Chart Renderer",
-                        "Render a **pie chart** as a PNG image BLOB from a DuckDB relation. Name "
+                        "Render a **pie chart** as a PNG image `BLOB` from a DuckDB relation. Name "
                                 + "the `label` column (slice names) and the numeric `value` column "
                                 + "(slice sizes); supply optional `title`, `width`, and `height`.\n\n"
                                 + "Use it to show the composition of a whole — market share, budget "
@@ -34,7 +34,7 @@ public final class ChartPieFunction extends ChartFunction {
                                 + "slice. Rows with a NULL label or value are skipped. Returns a "
                                 + "single `(png BLOB)` row holding the rendered PNG.",
                         "## chart_pie\n\n"
-                                + "Render a **pie chart** from a query result to a PNG image BLOB.\n\n"
+                                + "Render a **pie chart** from a query result to a PNG image `BLOB`.\n\n"
                                 + "### Usage\n\n"
                                 + "Pass the relation as the table argument, name the `label` and "
                                 + "`value` columns, and optionally add a `title`, `width`, and "

@@ -74,7 +74,7 @@ Makefile                        build / test-unit / test-sql / test / clean
 
 ## SDK dependency & CI (self-contained via Maven Central)
 
-Depends on `farm.query:vgi:0.16.0` (pulls in `farm.query:vgirpc:0.15.0`
+Depends on `farm.query:vgi:0.19.0` (pulls in `farm.query:vgirpc:0.16.0`
 transitively; vgirpc declared explicitly since the code imports
 `farm.query.vgirpc.*`) and `org.jfree:jfreechart:1.5.6`. The VGI SDK provides
 `Worker.schemaTags`, `FunctionMetadata.withTag(s)` and `withExamples`, used to

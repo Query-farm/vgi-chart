@@ -37,19 +37,19 @@ public final class ChartLineFunction extends ChartFunction {
     @Override public FunctionMetadata metadata() {
         java.util.Map<String, String> tags = objectTags(
                         "Line Chart Renderer",
-                        "Render a **line chart** as a PNG image BLOB from a DuckDB relation. "
+                        "Render a **line chart** as a PNG image `BLOB` from a DuckDB relation. "
                                 + "Pass the relation as the table argument and name the `x` and `y` "
                                 + "columns; supply an optional `series` column to draw one line per "
                                 + "distinct series value, and optional `title`, `width`, and "
                                 + "`height`.\n\n"
                                 + "Use it when you have an ordered or time-like x axis and want to "
                                 + "show a trend or compare several series over a common x. The x "
-                                + "axis is numeric when the x column is numeric (including DATE / "
-                                + "TIMESTAMP / DECIMAL), otherwise it becomes a category axis. "
+                                + "axis is numeric when the x column is numeric (including `DATE` / "
+                                + "`TIMESTAMP` / `DECIMAL`), otherwise it becomes a category axis. "
                                 + "Rows where x or y is NULL are skipped. Returns a single "
                                 + "`(png BLOB)` row holding the rendered PNG.",
                         "## chart_line\n\n"
-                                + "Render a **line chart** from a query result to a PNG image BLOB.\n\n"
+                                + "Render a **line chart** from a query result to a PNG image `BLOB`.\n\n"
                                 + "### Usage\n\n"
                                 + "Pass the relation as the table argument, name the `x` and `y` "
                                 + "columns, and optionally add a `series` column plus `title`, "

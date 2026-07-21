@@ -125,7 +125,7 @@ public final class Main {
                 "chart, charts, charting, plot, plotting, graph, visualization, png, image, "
                 + "line, bar, pie, scatter, histogram, jfreechart, dataviz"));
         t.put("vgi.doc_llm",
-                "Render a DuckDB query result into a chart as a PNG image BLOB, entirely in "
+                "Render a DuckDB query result into a chart as a PNG image `BLOB`, entirely in "
                 + "SQL. Each chart function is a table-in-out function: it consumes an input "
                 + "relation as its table-valued first argument, reads the columns you name, "
                 + "draws the chart headless with JFreeChart, and returns a single `(png BLOB)` "
@@ -133,12 +133,11 @@ public final class Main {
                 + "visualize aggregates, series, or distributions directly where the data lives "
                 + "— a category comparison, a time series, a value spread — and get back an "
                 + "image you can write to disk, embed in a report, or return to a caller, "
-                + "without an external plotting notebook or BI tool. List the schema to discover "
-                + "the specific chart types available and the column arguments each takes.");
+                + "without an external plotting notebook or BI tool.");
         t.put("vgi.doc_md",
                 "# Chart Rendering for SQL\n\n"
                 + "**Turn any DuckDB query into a publication-ready chart — line, bar, pie, "
-                + "scatter, or histogram — rendered to a PNG image BLOB entirely in SQL, with "
+                + "scatter, or histogram — rendered to a PNG image `BLOB` entirely in SQL, with "
                 + "no plotting notebook, BI tool, or external service.**\n\n"
                 + "The `chart` extension lets you visualize query results where the data already "
                 + "lives. Point a chart function at a relation, name the columns to plot, and get "
@@ -160,9 +159,7 @@ public final class Main {
                 + "The worker covers the everyday visualization needs — trends and relationships "
                 + "between numeric variables, comparisons of a measure across discrete "
                 + "categories, and the distribution of a single column — with a shared set of "
-                + "optional title, width, and height controls over the rendered output. List the "
-                + "schema to see the exact chart functions available and the column arguments "
-                + "each one takes.\n\n"
+                + "optional title, width, and height controls over the rendered output.\n\n"
                 + "Learn more from the [JFreeChart project homepage](https://www.jfree.org/jfreechart/), "
                 + "the [source code on GitHub](https://github.com/jfree/jfreechart), and the "
                 + "[JFreeChart API documentation](https://www.jfree.org/jfreechart/javadoc/index.html).");
@@ -194,15 +191,14 @@ public final class Main {
         // URL lives only on the catalog object (Worker.builder().sourceUrl(...)).
         t.put("vgi.doc_llm",
                 "Chart-rendering table-in-out functions that turn a relation into a PNG image "
-                + "BLOB. Each function takes the input relation as a table-valued first argument "
+                + "`BLOB`. Each function takes the input relation as a table-valued first argument "
                 + "plus named column arguments identifying what to plot, renders the chart "
                 + "headless with JFreeChart, and returns a single `(png BLOB)` row. The functions "
                 + "cover trends and relationships between numeric variables, comparisons across "
-                + "discrete categories, and the distribution of a single numeric column; list "
-                + "the schema to see each one and its arguments.");
+                + "discrete categories, and the distribution of a single numeric column.");
         t.put("vgi.doc_md",
                 "## Chart functions\n\n"
-                + "Render a query result to a PNG image BLOB via JFreeChart. Each function is a "
+                + "Render a query result to a PNG image `BLOB` via JFreeChart. Each function is a "
                 + "table-in / table-out function: it consumes the input relation as a "
                 + "table-valued first argument, reads the columns you name, and emits a single "
                 + "`(png BLOB)` row holding the rendered image.\n\n"
@@ -271,7 +267,7 @@ public final class Main {
                 .catalogTags(catalogTags())
                 .sourceUrl("https://github.com/Query-farm/vgi-chart")
                 .schemaComment("main", "Chart-rendering functions that turn a query result into "
-                        + "a PNG image BLOB (line, bar, pie, scatter, histogram).")
+                        + "a PNG image `BLOB` (line, bar, pie, scatter, histogram).")
                 .schemaTags("main", mainSchemaTags())
                 .registerTableInOut(new ChartLineFunction())
                 .registerTableInOut(new ChartBarFunction())
