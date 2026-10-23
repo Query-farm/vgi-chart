@@ -2,7 +2,7 @@ plugins {
     java
     application
     // Fat/shaded JAR: `./gradlew shadowJar` -> build/libs/vgi-chart-<ver>-all.jar
-    id("com.gradleup.shadow") version "9.4.2"
+    id("com.gradleup.shadow") version "9.6.1"
 }
 
 group = "farm.query"
@@ -36,17 +36,17 @@ dependencies {
     // VGI Java SDK from Maven Central. `vgi` is the worker/catalog API and pulls
     // in farm.query:vgirpc transitively; vgirpc is declared explicitly because
     // the code imports farm.query.vgirpc.* directly.
-    implementation("farm.query:vgi:0.19.0")
-    implementation("farm.query:vgirpc:0.16.0")
+    implementation("farm.query:vgi:0.43.0")
+    implementation("farm.query:vgirpc:0.33.1")
 
     // JFreeChart — LGPL-2.1. Used UNMODIFIED as a standard Maven Central
     // dependency to render charts to PNG via java.awt (headless). See the README
     // licensing table + LGPL note. Pulls in org.jfree:jcommon transitively.
     implementation("org.jfree:jfreechart:1.5.6")
 
-    implementation("org.slf4j:slf4j-simple:2.0.18")
+    implementation("org.slf4j:slf4j-simple:2.0.20")
 
-    testImplementation("org.junit.jupiter:junit-jupiter:5.14.4")
+    testImplementation("org.junit.jupiter:junit-jupiter:6.1.3")
     testRuntimeOnly("org.junit.platform:junit-platform-launcher")
 }
 

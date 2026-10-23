@@ -54,9 +54,10 @@ public final class Main {
      * function so the suite covers all five objects. A rendered PNG is not
      * byte-stable across platforms, so every reference grades on a deterministic
      * bounded property — the result-row count (always 1) or a "PNG larger than N
-     * bytes" boolean — never on exact bytes. {@code ignore_column_names} keeps
-     * grading value-only so an analyst's column alias does not matter. Only the
-     * {@code prompt} is shown to the analyst; {@code reference_sql} is grader-only.
+     * bytes" boolean — never on exact bytes. Only {@code name} + {@code prompt}
+     * are published; the private grader fields ({@code reference_sql},
+     * {@code ignore_column_names}, ...) live in {@code vgi-agent-tests.yaml} at the
+     * repo root, keyed by task name, and never reach the analyst (VGI416).
      */
     static final String AGENT_TEST_TASKS_JSON =
             "["
@@ -64,53 +65,30 @@ public final class Main {
             + "\"prompt\":\"Use the chart worker to render a vertical bar chart from three "
             + "categories built inline with a VALUES relation: 'A' = 30, 'B' = 45, 'C' = 12 "
             + "(columns named category and value). Return the number of result rows the chart "
-            + "function produces as a single column.\","
-            + "\"reference_sql\":\"SELECT count(*) AS n FROM chart.main.chart_bar("
-            + "(SELECT * FROM (VALUES ('A', 30), ('B', 45), ('C', 12)) AS t(category, value)), "
-            + "category := 'category', value := 'value')\","
-            + "\"ignore_column_names\":true},"
+            + "function produces as a single column.\"},"
             + "{\"name\":\"line chart row count\","
             + "\"prompt\":\"Use the chart worker to render a line chart from the points "
             + "(x, y) = (1, 10), (2, 25), (3, 18), (4, 30), built inline with a VALUES relation "
             + "(columns x and y). Return the number of result rows the chart function produces as "
-            + "a single column.\","
-            + "\"reference_sql\":\"SELECT count(*) AS n FROM chart.main.chart_line("
-            + "(SELECT * FROM (VALUES (1, 10), (2, 25), (3, 18), (4, 30)) AS t(x, y)), "
-            + "x := 'x', y := 'y')\","
-            + "\"ignore_column_names\":true},"
+            + "a single column.\"},"
             + "{\"name\":\"pie chart png size check\","
             + "\"prompt\":\"Use the chart worker to draw a pie chart of two slices built inline "
             + "with a VALUES relation: 'X' = 65 and 'Y' = 35 (columns label and value). Return a "
             + "single boolean column that is true when the rendered PNG image is larger than 100 "
-            + "bytes.\","
-            + "\"reference_sql\":\"SELECT octet_length(png) > 100 AS ok FROM chart.main.chart_pie("
-            + "(SELECT * FROM (VALUES ('X', 65), ('Y', 35)) AS t(label, value)), "
-            + "label := 'label', value := 'value')\","
-            + "\"ignore_column_names\":true},"
+            + "bytes.\"},"
             + "{\"name\":\"scatter plot row count\","
             + "\"prompt\":\"Use the chart worker to render a scatter plot of the numeric points "
             + "(x, y) = (1.0, 2.1), (2.0, 3.9), (3.0, 1.5), built inline with a VALUES relation "
             + "(columns x and y). Return the number of result rows the chart function produces as "
-            + "a single column.\","
-            + "\"reference_sql\":\"SELECT count(*) AS n FROM chart.main.chart_scatter("
-            + "(SELECT * FROM (VALUES (1.0, 2.1), (2.0, 3.9), (3.0, 1.5)) AS t(x, y)), "
-            + "x := 'x', y := 'y')\","
-            + "\"ignore_column_names\":true},"
+            + "a single column.\"},"
             + "{\"name\":\"histogram png size check\","
             + "\"prompt\":\"Use the chart worker to render a histogram with 5 bins of the numeric "
             + "values 1.0, 1.5, 2.0, 2.5, 3.0, built inline with a VALUES relation (column value). "
             + "Return a single boolean column that is true when the rendered PNG image is larger "
-            + "than 100 bytes.\","
-            + "\"reference_sql\":\"SELECT octet_length(png) > 100 AS ok FROM "
-            + "chart.main.chart_histogram("
-            + "(SELECT * FROM (VALUES (1.0), (1.5), (2.0), (2.5), (3.0)) AS t(value)), "
-            + "value := 'value', bins := 5)\","
-            + "\"ignore_column_names\":true},"
+            + "than 100 bytes.\"},"
             + "{\"name\":\"chart type catalog count\","
             + "\"prompt\":\"Using the chart worker's browsable catalog, find out how many "
-            + "distinct chart types it offers. Return that total as a single column.\","
-            + "\"reference_sql\":\"SELECT count(*) AS n FROM chart.main.chart_types()\","
-            + "\"ignore_column_names\":true}"
+            + "distinct chart types it offers. Return that total as a single column.\"}"
             + "]";
 
     public static final String GIT_COMMIT =
