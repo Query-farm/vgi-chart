@@ -2,10 +2,15 @@ package farm.query.vgi.chart;
 
 import farm.query.vgi.Worker;
 import farm.query.vgi.catalog.CatalogTable;
+import farm.query.vgi.catalog.ConstraintRecord;
 import farm.query.vgi.internal.SchemaUtil;
 
+import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
+import org.apache.arrow.vector.types.pojo.Field;
 
 /**
  * VGI worker entry point: render charts from a query result into PNG image BLOBs
@@ -229,8 +234,32 @@ public final class Main {
                 .scanFunction("chart_types")
                 .cardinality(ChartTypesFunction.ROWS.length, ChartTypesFunction.ROWS.length)
                 // VGI807/VGI806: chart_type uniquely identifies each reference row.
-                .primaryKey(java.util.List.of(java.util.List.of(0)))
+                .constraints(chartTypesConstraints(), "chart_types.v1".getBytes(StandardCharsets.UTF_8))
                 .build();
+    }
+
+    /**
+     * Under vgi.v3 constraints are canonical records: NOT_NULL for every
+     * non-nullable column (the SDK serves a column non-nullable only when a NOT_NULL
+     * or PRIMARY KEY record names it) plus the PRIMARY KEY (chart_type).
+     */
+    static List<ConstraintRecord> chartTypesConstraints() {
+        List<ConstraintRecord> out = new ArrayList<>();
+        for (Field f : ChartSchemas.CHART_TYPES_SCHEMA.getFields()) {
+            if (!f.isNullable()) {
+                out.add(ConstraintRecord.builder("main", "chart_types", f.getName() + "_not_null")
+                        .notNull(f.getName())
+                        .enforcement(ConstraintRecord.Enforcement.ENFORCED)
+                        .validation(ConstraintRecord.Validation.ALL_ROWS)
+                        .build());
+            }
+        }
+        out.add(ConstraintRecord.builder("main", "chart_types", "chart_types_pk")
+                .primaryKey("chart_type")
+                .enforcement(ConstraintRecord.Enforcement.ENFORCED)
+                .validation(ConstraintRecord.Validation.ALL_ROWS)
+                .build());
+        return out;
     }
 
     public static Worker buildWorker() {

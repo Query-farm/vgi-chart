@@ -165,7 +165,7 @@ make test-sql    # fat JAR + haybarn-unittest over test/sql/*
 
 The SQL E2E suite (`test/sql/*.test`) runs the real functions inside DuckDB via
 [`haybarn-unittest`](https://pypi.org/project/haybarn-unittest/) with the fat JAR
-as the VGI `LOCATION`. Install the runner once with `uv tool install haybarn-unittest`
+as the VGI `LOCATION`. Install the runner once with `uv tool install --prerelease allow 'haybarn-unittest>=2.0.0rc11,<2.1'`
 and put `~/.local/bin` on `PATH`. Each `.test` builds its data with `VALUES`/a CTE
 and asserts the result is a non-empty PNG via `png[1:4] = '\x89PNG'::BLOB` and
 `octet_length(png) > 100`.

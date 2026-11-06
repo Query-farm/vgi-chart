@@ -74,7 +74,7 @@ Makefile                        build / test-unit / test-sql / test / clean
 
 ## SDK dependency & CI (self-contained via Maven Central)
 
-Depends on `farm.query:vgi:0.43.0` (pulls in `farm.query:vgirpc:0.33.1`
+Depends on `farm.query:vgi:0.46.0` (pulls in `farm.query:vgirpc:0.33.3`
 transitively; vgirpc declared explicitly since the code imports
 `farm.query.vgirpc.*`) and `org.jfree:jfreechart:1.5.6`. The VGI SDK provides
 `Worker.schemaTags`, `FunctionMetadata.withTag(s)` and `withExamples`, used to
@@ -117,3 +117,15 @@ JUnit (which uses explicit `Float8Vector` fixtures) and was caught only by E2E.
 ## Packaging
 
 ~33 MB shaded JAR (JFreeChart 1.5.6, LGPL-2.1; VGI SDK + Apache Arrow dominate the size).
+
+## VGI protocol / haybarn 2.0
+
+vgi 0.46.0 speaks VGI protocol **vgi.v3 / 3.1.0** (`/health` reports
+`"protocol":"vgi.v3"`); only haybarn **2.0**'s community `vgi` extension attaches
+it. CI resolves the newest `haybarn-v2.0.*` release, runs `haybarn-unittest
+--keep-home`, and gates metadata with `Query-farm/vgi-lint-check@v2`.
+Catalog-table constraints are canonical `ConstraintRecord`s passed to
+`CatalogTable.Builder#constraints(..)`; the legacy `.primaryKey(..)` builders throw
+under vgi.v3 (only vgi-lint / a real table scan catches it, not the SQL E2E).
+Emit NOT_NULL records for non-nullable columns too: the SDK serves a column
+non-nullable only when a NOT_NULL/PK record names it.
