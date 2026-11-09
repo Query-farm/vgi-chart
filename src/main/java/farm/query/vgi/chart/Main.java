@@ -103,7 +103,10 @@ public final class Main {
     /** Catalog-level VGI metadata tags (LLM/Markdown docs, authorship, support). */
     static Map<String, String> catalogTags() {
         Map<String, String> t = new LinkedHashMap<>();
-        t.put("vgi.title", "Chart Rendering for SQL");
+        t.put("vgi.title", "Chart Rendering");
+        t.put("vgi.subtitle",
+                "Render query results as line, bar, pie, scatter, and histogram PNG charts "
+                + "with JFreeChart.");
         t.put("vgi.keywords", ChartFunction.keywordsJson(
                 "chart, charts, charting, plot, plotting, graph, visualization, png, image, "
                 + "line, bar, pie, scatter, histogram, jfreechart, dataviz"));
@@ -118,7 +121,7 @@ public final class Main {
                 + "image you can write to disk, embed in a report, or return to a caller, "
                 + "without an external plotting notebook or BI tool.");
         t.put("vgi.doc_md",
-                "# Chart Rendering for SQL\n\n"
+                "# Chart Rendering\n\n"
                 + "**Turn any DuckDB query into a publication-ready chart — line, bar, pie, "
                 + "scatter, or histogram — rendered to a PNG image `BLOB` entirely in SQL, with "
                 + "no plotting notebook, BI tool, or external service.**\n\n"
@@ -162,7 +165,7 @@ public final class Main {
     /** Schema-level VGI metadata tags for the single `main` schema. */
     static Map<String, String> mainSchemaTags() {
         Map<String, String> t = new LinkedHashMap<>();
-        t.put("vgi.title", "Chart Functions — main");
+        t.put("vgi.title", "Chart Functions");
         t.put("vgi.keywords", ChartFunction.keywordsJson(
                 "chart, chart_line, chart_bar, chart_pie, chart_scatter, chart_histogram, "
                 + "plot, graph, visualization, png, jfreechart"));
