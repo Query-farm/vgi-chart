@@ -120,7 +120,7 @@ JUnit (which uses explicit `Float8Vector` fixtures) and was caught only by E2E.
 
 ## VGI protocol / haybarn 2.0
 
-vgi 0.47.0 speaks VGI protocol **vgi.v3 / 3.2.0** (`/health` reports
+vgi 0.48.0 speaks VGI protocol **vgi.v3 / 3.3.0** (`/health` reports
 `"protocol":"vgi.v3"`); only haybarn **2.0**'s community `vgi` extension attaches
 it. CI resolves the newest `haybarn-v2.0.*` release, runs `haybarn-unittest
 --keep-home`, and gates metadata with `Query-farm/vgi-lint-check@v2`.

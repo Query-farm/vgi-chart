@@ -235,6 +235,9 @@ public final class Main {
                         + "a one-line summary, and the column arguments it takes.")
                 .tags(ChartTypesFunction.tags())
                 .scanFunction("chart_types")
+                // Protocol 3.3 hides a table's scan function unless the table exposes
+                // it; chart_types() is a documented public table function too.
+                .exposeScan(true)
                 .cardinality(ChartTypesFunction.ROWS.length, ChartTypesFunction.ROWS.length)
                 // VGI807/VGI806: chart_type uniquely identifies each reference row.
                 .constraints(chartTypesConstraints(), "chart_types.v1".getBytes(StandardCharsets.UTF_8))
