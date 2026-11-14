@@ -1,0 +1,53 @@
+{
+  "query": "SELECT * FROM duckdb_tables() WHERE database_name='chart' ORDER BY schema_name,table_name",
+  "columns": [
+    "database_name",
+    "database_oid",
+    "schema_name",
+    "schema_oid",
+    "table_name",
+    "table_oid",
+    "comment",
+    "tags",
+    "internal",
+    "temporary",
+    "has_primary_key",
+    "estimated_size",
+    "column_count",
+    "index_count",
+    "check_constraint_count",
+    "sql"
+  ],
+  "rows": [
+    [
+      "chart",
+      22592,
+      "main",
+      22732,
+      "chart_types",
+      22733,
+      "One row per chart function this worker exposes, with its category, a one-line summary, and the column arguments it takes.",
+      {
+        "category": "charting",
+        "domain": "data-visualization",
+        "topic": "chart-rendering",
+        "vgi.category": "reference",
+        "vgi.doc_llm": "List every chart function this worker exposes \u2014 `chart_line`, `chart_bar`, `chart_pie`, `chart_scatter`, and `chart_histogram` \u2014 each with its category, a one-line summary of what it visualizes, and the named column arguments it takes. Query it to discover which chart type fits your data and what columns to name before calling a chart function, or to drive a chart-type picker. Takes no arguments and always returns one row per chart type.",
+        "vgi.doc_md": "## chart_types\n\nA reference table with one row per chart function this worker exposes, so you can discover the available chart types and their inputs before calling one.\n\nEach row gives the function's SQL name, its category, a one-line summary of what it visualizes, and the named column arguments it accepts. Takes no arguments and always returns rows.\n\nSee this object's example queries for complete, runnable calls.",
+        "vgi.example_queries": "[{\"description\":\"List every chart type this worker offers with its category and the column arguments it takes.\",\"sql\":\"SELECT chart_type, category, column_arguments FROM chart.main.chart_types() ORDER BY chart_type\"},{\"description\":\"Find the chart types that compare a measure across discrete categories.\",\"sql\":\"SELECT chart_type, summary FROM chart.main.chart_types() WHERE category = 'categorical-comparisons' ORDER BY chart_type\"}]",
+        "vgi.executable_examples": "[{\"description\":\"List every chart type with its category, ordered by name.\",\"sql\":\"SELECT chart_type, category FROM chart.main.chart_types() ORDER BY chart_type\"}]",
+        "vgi.keywords": "[\"chart types\",\"catalog\",\"reference\",\"discovery\",\"list charts\",\"available charts\",\"chart_line\",\"chart_bar\",\"chart_pie\",\"chart_scatter\",\"chart_histogram\"]",
+        "vgi.result_columns_schema": "[{\"name\":\"chart_type\",\"type\":\"VARCHAR\",\"description\":\"The chart function's SQL name, e.g. chart_line.\"},{\"name\":\"category\",\"type\":\"VARCHAR\",\"description\":\"The chart's category in the schema's category registry.\"},{\"name\":\"summary\",\"type\":\"VARCHAR\",\"description\":\"One-line description of what the chart visualizes.\"},{\"name\":\"column_arguments\",\"type\":\"VARCHAR\",\"description\":\"The named column arguments that select the data to plot, in call order.\"}]",
+        "vgi.title": "Chart Type Catalog"
+      },
+      false,
+      false,
+      true,
+      0,
+      4,
+      1,
+      0,
+      "CREATE TABLE chart_types(chart_type VARCHAR, category VARCHAR NOT NULL, summary VARCHAR NOT NULL, column_arguments VARCHAR NOT NULL, PRIMARY KEY(chart_type));"
+    ]
+  ]
+}

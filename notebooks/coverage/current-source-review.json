@@ -1,0 +1,23 @@
+{
+  "released_revision": "6d7df69faec4c3a2cbd1c75c7c8b275ecba05418",
+  "current_revision": "e4d57b2b2a2115ebd19f47c30d486273e8cadd3a",
+  "changed_paths_since_release": [
+    "README.md",
+    "notebooks/.gitignore",
+    "notebooks/01_choose_the_denominator.ipynb",
+    "notebooks/README.md",
+    "notebooks/STANDARD.md",
+    "notebooks/assets/query-farm-strata-sun.svg",
+    "notebooks/assets/vgi-logo.png",
+    "notebooks/execute.py",
+    "notebooks/notebook_support.py",
+    "notebooks/pyproject.toml",
+    "notebooks/release_jar.py",
+    "notebooks/ruff.toml",
+    "notebooks/uv.lock"
+  ],
+  "worker_source_and_build_inputs_identical": true,
+  "current_catalog_method": "Release JAR queried again against byte-identical current worker implementation; no current binary built. Current-interface evidence is source-equivalence review, not a separate current build execution.",
+  "native_output": "All five rendering methods return png BLOB only; SVG frame preserves exact PNG bytes.",
+  "checked_at": "2026-11-14T22:07:20.805387+00:00"
+}

@@ -227,4 +227,4 @@ Copyright 2026 Query Farm LLC - https://query.farm
 
 ## Notebooks
 
-[Run the executed denominator walkthrough](notebooks/README.md) to calculate weekly and pooled failure rates in SQL and render their differences with the real chart worker.
+[Run the executed chart walkthroughs](notebooks/README.md) to compare rate denominators, row-weighted distributions and failure contributions through all five released renderers.

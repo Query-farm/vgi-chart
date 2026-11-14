@@ -1,83 +1,64 @@
-# Chart notebooks
+# Chart Rendering walkthroughs
 
-[Choose the denominator before drawing the chart](01_choose_the_denominator.ipynb)
-compares average weekly failure rates with pooled request rates for a small synthetic
-fixture. Visible SQL prepares the data and calls the real Java chart worker. Its
-returned line/bar PNGs are displayed with provenance footers; Python does not redraw
-the analytical charts.
+Two independent investigations use the real released worker to render SQL results:
 
-## Run from this folder
+- [01 · Choose the denominator](01_choose_the_denominator.ipynb) compares equally weighted weekly percentages with a rate pooled over all requests. The catalog guides the line/bar choices; neither renderer selects the denominator.
+- [02 · Observations and contributions](02_observations_and_contributions.ipynb) separates a row-weighted distribution, volume-versus-rate coordinates, and each region's contribution to total failures. Scatter overlap is audited explicitly; a histogram counts rows and a pie sums failure counts.
 
-Prerequisites: [uv](https://docs.astral.sh/uv/), Java 21+ on PATH and network access for
-initial package/extension and JAR downloads. `uv` can provision Python. Copy this
-whole `notebooks/` folder anywhere; no worker checkout, Gradle installation, source
-build or root virtual environment is required.
+Both use twelve **synthetic** region-week observations. They make no claims about a real service or a causal relationship. Every transformation, aggregation and render call is visible SQL. Python validates and presents the returned images without redrawing their analytical content.
 
-```bash
-cd notebooks
-uv sync --frozen
-uv run --frozen python execute.py
+## Run locally or in Colab
+
+Install [uv](https://docs.astral.sh/uv/). The tested launcher supports POSIX macOS and glibc Linux on arm64/x86_64; native Windows is not supported because the JAR cache uses POSIX locking. First use needs network access to retrieve the shared package, VGI extension, Python, managed Java and the release JAR. A system Java installation, Gradle and the worker source checkout are unnecessary.
+
+From `notebooks/`:
+
+```sh
+uv sync --locked
+uv run --locked vgi-notebooks 01_choose_the_denominator.ipynb
+uv run --locked vgi-notebooks 02_observations_and_contributions.ipynb
 ```
 
-The notebook environment is locked to Haybarn 2.0.0rc11. The literal ATTACH uses the
-published `v0.4.0/vgi-chart-v0.4.0.jar` and SHA256
-`532df4080167ff55381fa282682abeb149f4b7e7a9e72aeaf3ea68878e45f6c7`.
-`release_jar.py` downloads it from GitHub, verifies that digest and caches it under
-`${XDG_CACHE_HOME:-~/.cache}/vgi-notebook-jars`. It rechecks cached bytes before reuse,
-serializes downloads with a POSIX file lock, then replaces itself with headless Java
-so VGI owns stdin/stdout. Setup output goes to stderr. The helper supports macOS/Linux;
-execution was verified on macOS arm64 with Java 21.0.13. Windows is not validated.
+An editor can use `notebooks/.venv/bin/python` and `notebooks/` as the working directory. Restart/run all after changing a parameter. Each Colab badge opens the same notebook source; its bootstrap installs the shared **base** package, while the local environment adds `[runner]`. The shared `chart` registry retrieves three immutable companions with SHA256 checks, so a notebook-only copy runs without the repository. The connection uses an empty temporary SQL secret directory with persistent secrets disabled.
 
-To upgrade, change the literal release filename, tag and digest together, then rerun
-both parameter cases from a notebook-only folder. The release JAR bundles its existing
-dependencies; licensing is described in the worker repository. No JAR is vendored here.
+The connection remains short and explicit:
 
-For an interactive kernel:
-
-```bash
-uv run --frozen python -m ipykernel install --user \
-  --name vgi-chart-notebooks --display-name 'Python (vgi-chart notebooks)'
+```sql
+ATTACH 'chart' (TYPE vgi,
+ LOCATION 'uv run --locked --no-project --python 3.13 chart_release.py v0.4.0');
 ```
 
-Open the notebook in your preferred Jupyter interface, select that kernel and use
-this folder as its working directory. Parameters, connection and analytical SQL
-remain visible. Setup, image presentation and cleanup are folded.
+[`chart_release.py`](chart_release.py) pins the public [v0.4.0 JAR](https://github.com/Query-farm/vgi-chart/releases/tag/v0.4.0) to SHA256 `532df4080167ff55381fa282682abeb149f4b7e7a9e72aeaf3ea68878e45f6c7`. Its [PEP 723 lock](chart_release.py.lock) supplies `jdk4py==21.0.8.2` in an isolated environment, checks the actual **Java 21.0.8** binary, and never uses system Java. Cache publication is atomic and cached bytes are rechecked before execution. Java and the worker libraries do not enter the notebook kernel.
 
-## Data and rendering boundaries
+## Native PNG inside an SVG frame
 
-All 12 observations are invented: four weeks of request/failure counts in three
-fictional regions. `WEEKS` includes weeks 1 through the chosen integer 2–4. There is
-no live data, credential or external dataset. Request counts are positive and failures
-are a subset of requests; SQL checks the grain and these bounds.
+This release returns **PNG only**. The worker has no theme or SVG-output argument. Its native palette, grid, labels and legend are preserved. [`chart_example.py`](chart_example.py) requires exactly one 1100 × 640 PNG, checks its format/dimensions, saves the original BLOB under ignored `artifacts/worker-png/`, and embeds those same bytes in an SVG containing titles and provenance. The analytical plot remains raster content; the SVG does not vectorize it. Validation decodes the embedded image and compares its bytes with the worker output.
 
-An average of weekly percentages gives each week equal weight. A pooled rate gives
-each request equal weight. Neither definition is automatically correct for every
-question; the notebook explains the distinction and checks the weighted identity.
-The renderer consumes these SQL calculations rather than choosing the denominator.
+Published SVGs are linked under `charts/`, and the shared runner preserves native SVG output for Jupyter and Colab. PNG review previews are ignored. These tiny relations fit one input batch; larger relations may return a chart-so-far per batch, which the helper refuses to silently collapse. Empty input returns zero rows. PNG byte identity across platforms/fonts is not promised; the exact-byte claim is between each actual worker result and its displayed frame.
 
-The worker emits a chart-so-far after each input batch. These tiny relations are
-validated to return exactly one PNG; the helper refuses multiple rows instead of
-assuming an arbitrary image is final. Each PNG is checked for format and requested
-1100×640 dimensions. Bar input is aggregated to one row per category/series pair,
-because this worker replaces duplicate pairs instead of summing them.
+## Focused experiments
 
-The helper writes unmodified worker bytes to `validation/worker-png/` and places the
-image inside a Matplotlib frame with a source footer under `validation/charts/`.
-JFreeChart controls the plot itself; Seaborn styles only the surrounding presentation.
-Exact PNG bytes can vary across operating systems, fonts and JVMs.
+Preserve saved defaults by writing experiments separately:
 
-## Focused experiment
-
-```bash
-uv run --frozen python execute.py --parameters '{"WEEKS":2}' \
-  --output-dir validation/weeks-2
+```sh
+uv run --locked vgi-notebooks 01_choose_the_denominator.ipynb \
+  --parameters '{"WEEKS":2}' --output-dir validation/two-weeks
+uv run --locked vgi-notebooks 02_observations_and_contributions.ipynb \
+  --parameters '{"HIST_BINS":8}' --output-dir validation/eight-bins
 ```
 
-Keep the fixture unchanged and shorten the horizon from four weeks to two. Compare
-region rankings, Briar's averaging gap and both images. This changes the reporting
-population, not the behavior of a real service. Reset `WEEKS = 4` afterward.
+In 01, weeks 1–4 contain 7,800 requests and 370 failures; the highest mean weekly rate is Briar's 6.50%, while the highest pooled rate is Aster's 5.27%. Weeks 1–2 contain 3,300 requests and 112 failures; Briar leads both summaries at 10%. This changes the reporting population, not just the display.
 
-The runner uses a fresh temporary kernel and writes output only on success. Overrides
-require a separate destination; companion assets and runtime documentation are copied
-there. Logs, extracted PNGs and experiment copies are ignored by Git. The main notebook
-retains successful embedded outputs.
+In 02, all four weeks remain fixed. Four equal-width bins over 2–10% have counts **4, 4, 0, 4**. Eight bins have counts **1, 3, 4, 0, 0, 0, 2, 2**. Finer resolution exposes additional empty intervals without adding observations. The scatter and failure contributions remain unchanged: Aster 232, Briar 50 and Cedar 88 failures. SQL independently audits bin membership and additive shares.
+
+The runner starts a fresh kernel, replaces a default only after complete success, rejects unknown parameters and prevents overrides from overwriting the saved default. Parameter validation occurs before ATTACH. Experiment copies retain branding and documented dependencies.
+
+## Coverage and checks
+
+[coverage.json](coverage.json) maps **six of six** distinct public SQL names to meaningful executed SQL, result interpretation and reviews: all five renderers and `chart_types`. Its table/function alias counts once. Complete unfiltered worker function, table and view exports are retained in [coverage/](coverage/), including empty views. No advertised handler names or capabilities are excluded.
+
+The current public-main baseline `e4d57b2b2a2115ebd19f47c30d486273e8cadd3a` differs from release `6d7df69faec4c3a2cbd1c75c7c8b275ecba05418` only in notebooks and README. The worker implementation and build inputs are byte-identical. Current-interface evidence explicitly reuses the released JAR with that source-equivalence review; it is not a claim of a separate current-build execution. Hash-bound execution receipts record the actual release revision.
+
+Validation comprises both defaults, both notebook-only detached experiments, fifteen SQL invariants including empty input, PNG signature/dimension/embedding checks, three runner guards, and invalid parameters for both books. One fresh Python 3.12 kernel with already imported older pandas/Matplotlib/IPython/ipykernel/jupyter-client checks the full companion/bootstrap path without replacing those libraries or installing runner/Java dependencies in the kernel. This is local Colab-style compatibility testing; hosted Colab was not manually executed.
+
+Existing green [source CI at the unchanged baseline](https://github.com/Query-farm/vgi-chart/actions/runs/43563691447) is reused for this notebook-only update. There is no worker rebuild or repeat source suite. JFreeChart 1.5.6 renders locally; no private credentials, external account writes or service data are involved. Full notebook standards live in the [shared package](https://github.com/Query-farm/vgi-example-notebooks/blob/main/docs/standard.md).

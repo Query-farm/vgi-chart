@@ -1,0 +1,251 @@
+{
+  "schema_version": 1,
+  "catalogs": {
+    "released": {
+      "path": "coverage/catalog-released.json",
+      "sha256": "0c7a5aa12f34375aa0c13591da5b963878d266ada7a6c6a6c51ba33d1a4c6b4e",
+      "review": {
+        "status": "approved",
+        "reviewer": "/root/notebooks_sympy",
+        "reviewed_at": "2026-11-14T22:09:45.956447+00:00",
+        "catalog_sha256": "0c7a5aa12f34375aa0c13591da5b963878d266ada7a6c6a6c51ba33d1a4c6b4e",
+        "notes": "Complete native function/table/view exports reconcile to six logical names; chart_types aliases count once and no capabilities are excluded. Current snapshot uses the released JAR with explicit source/build-input identity review at current-source-review.json, not a rebuilt current binary."
+      }
+    },
+    "current": {
+      "path": "coverage/catalog-current.json",
+      "sha256": "0de69c909b59164da7a030161f9a55e616f82f98068f898a96c0d08ccf960c18",
+      "review": {
+        "status": "approved",
+        "reviewer": "/root/notebooks_sympy",
+        "reviewed_at": "2026-11-14T22:09:45.956447+00:00",
+        "catalog_sha256": "0de69c909b59164da7a030161f9a55e616f82f98068f898a96c0d08ccf960c18",
+        "notes": "Complete native function/table/view exports reconcile to six logical names; chart_types aliases count once and no capabilities are excluded. Current snapshot uses the released JAR with explicit source/build-input identity review at current-source-review.json, not a rebuilt current binary."
+      }
+    }
+  },
+  "notebooks": [
+    {
+      "path": "01_choose_the_denominator.ipynb",
+      "sha256": "388247a6f3b4c5d89509ed62ddd4ae9ff0962f67ff8f0627a6598aefa2a1b030",
+      "execution": {
+        "path": "coverage/run-01.json",
+        "sha256": "9922d37f265378b9d9b0b30656cf4120fb25deb05f4ad3c35b8af2b31baaf85c"
+      }
+    },
+    {
+      "path": "02_observations_and_contributions.ipynb",
+      "sha256": "c2d465623d4a2b548984480dfcb79ebb5c47822913213397db62583f555dae0b",
+      "execution": {
+        "path": "coverage/run-02.json",
+        "sha256": "78f37eaf68a7c7f9862783638c4213eaa608030e16f389e3a7620becf60c5dbc"
+      }
+    }
+  ],
+  "examples": [
+    {
+      "object": {
+        "schema": "main",
+        "name": "chart_types"
+      },
+      "notebook": "01_choose_the_denominator.ipynb",
+      "sql": [
+        {
+          "cell": "types-sql",
+          "reference": "chart.main.chart_types"
+        }
+      ],
+      "narrative_cells": [
+        "types-question"
+      ],
+      "result_cells": [
+        "types-finding"
+      ],
+      "interpretation_cells": [
+        "types-finding"
+      ],
+      "review": {
+        "status": "approved",
+        "reviewer": "/root/notebooks_sympy",
+        "reviewed_at": "2026-11-14T22:09:45.956447+00:00",
+        "notebook_sha256": "388247a6f3b4c5d89509ed62ddd4ae9ff0962f67ff8f0627a6598aefa2a1b030",
+        "catalog_sha256": [
+          "0c7a5aa12f34375aa0c13591da5b963878d266ada7a6c6a6c51ba33d1a4c6b4e",
+          "0de69c909b59164da7a030161f9a55e616f82f98068f898a96c0d08ccf960c18"
+        ],
+        "purpose": "Choose the renderer interface from the discovery table before supplying analytical rows.",
+        "finding": "Actual argument signatures distinguish ordered x/y trends from category/value comparisons, and verified names drive line/bar calls."
+      }
+    },
+    {
+      "object": {
+        "schema": "main",
+        "name": "chart_line"
+      },
+      "notebook": "01_choose_the_denominator.ipynb",
+      "sql": [
+        {
+          "cell": "aab04917",
+          "reference": "chart.main.chart_line"
+        }
+      ],
+      "narrative_cells": [
+        "03ff1ad1"
+      ],
+      "result_cells": [
+        "116055b0"
+      ],
+      "interpretation_cells": [
+        "5686c084"
+      ],
+      "review": {
+        "status": "approved",
+        "reviewer": "/root/notebooks_sympy",
+        "reviewed_at": "2026-11-14T22:09:45.956447+00:00",
+        "notebook_sha256": "388247a6f3b4c5d89509ed62ddd4ae9ff0962f67ff8f0627a6598aefa2a1b030",
+        "catalog_sha256": [
+          "0c7a5aa12f34375aa0c13591da5b963878d266ada7a6c6a6c51ba33d1a4c6b4e",
+          "0de69c909b59164da7a030161f9a55e616f82f98068f898a96c0d08ccf960c18"
+        ],
+        "purpose": "Inspect the weekly pattern before choosing the summary denominator.",
+        "finding": "Briar falls from10%to3% as request volume rises; materialized line returns one valid1100x640PNG embedded byte-for-byte. Shorter horizon keeps only first two weeks."
+      }
+    },
+    {
+      "object": {
+        "schema": "main",
+        "name": "chart_bar"
+      },
+      "notebook": "01_choose_the_denominator.ipynb",
+      "sql": [
+        {
+          "cell": "f493c4b5",
+          "reference": "chart.main.chart_bar"
+        }
+      ],
+      "narrative_cells": [
+        "d61b3589"
+      ],
+      "result_cells": [
+        "88f7e598"
+      ],
+      "interpretation_cells": [
+        "5686c084"
+      ],
+      "review": {
+        "status": "approved",
+        "reviewer": "/root/notebooks_sympy",
+        "reviewed_at": "2026-11-14T22:09:45.956447+00:00",
+        "notebook_sha256": "388247a6f3b4c5d89509ed62ddd4ae9ff0962f67ff8f0627a6598aefa2a1b030",
+        "catalog_sha256": [
+          "0c7a5aa12f34375aa0c13591da5b963878d266ada7a6c6a6c51ba33d1a4c6b4e",
+          "0de69c909b59164da7a030161f9a55e616f82f98068f898a96c0d08ccf960c18"
+        ],
+        "purpose": "Compare equal-week and pooled-request percentages with unique category/series pairs.",
+        "finding": "Default mean-week leader Briar6.50% differs from pooled leader Aster5.27%; horizon2 makes Briar10%underboth. SQL verifies pooled rate equals request-weighted weekly rate."
+      }
+    },
+    {
+      "object": {
+        "schema": "main",
+        "name": "chart_scatter"
+      },
+      "notebook": "02_observations_and_contributions.ipynb",
+      "sql": [
+        {
+          "cell": "scatter-sql",
+          "reference": "chart.main.chart_scatter"
+        }
+      ],
+      "narrative_cells": [
+        "scatter-question"
+      ],
+      "result_cells": [
+        "scatter-figure"
+      ],
+      "interpretation_cells": [
+        "multiplicity-finding"
+      ],
+      "review": {
+        "status": "approved",
+        "reviewer": "/root/notebooks_sympy",
+        "reviewed_at": "2026-11-14T22:09:45.956447+00:00",
+        "notebook_sha256": "c2d465623d4a2b548984480dfcb79ebb5c47822913213397db62583f555dae0b",
+        "catalog_sha256": [
+          "0c7a5aa12f34375aa0c13591da5b963878d266ada7a6c6a6c51ba33d1a4c6b4e",
+          "0de69c909b59164da7a030161f9a55e616f82f98068f898a96c0d08ccf960c18"
+        ],
+        "purpose": "Relate numeric request volume to weekly failure percentage without hiding coincident observation counts.",
+        "finding": "Twelve rows occupy ten distinct region-coordinate combinations; Briar has two repeated low-volume/high-rate coordinates and two repeated lower-rate coordinates. Table preserves multiplicity."
+      }
+    },
+    {
+      "object": {
+        "schema": "main",
+        "name": "chart_histogram"
+      },
+      "notebook": "02_observations_and_contributions.ipynb",
+      "sql": [
+        {
+          "cell": "histogram-sql",
+          "reference": "chart.main.chart_histogram"
+        }
+      ],
+      "narrative_cells": [
+        "histogram-question"
+      ],
+      "result_cells": [
+        "histogram-figure"
+      ],
+      "interpretation_cells": [
+        "bin-finding"
+      ],
+      "review": {
+        "status": "approved",
+        "reviewer": "/root/notebooks_sympy",
+        "reviewed_at": "2026-11-14T22:09:45.956447+00:00",
+        "notebook_sha256": "c2d465623d4a2b548984480dfcb79ebb5c47822913213397db62583f555dae0b",
+        "catalog_sha256": [
+          "0c7a5aa12f34375aa0c13591da5b963878d266ada7a6c6a6c51ba33d1a4c6b4e",
+          "0de69c909b59164da7a030161f9a55e616f82f98068f898a96c0d08ccf960c18"
+        ],
+        "purpose": "Count equally weighted region-week observations in fixed-range equal-width bins.",
+        "finding": "Four bins over2\u201310% have counts4,4,0,4. Independent SQL retains empty intervals and conserves12rows. Eight-bin experiment refines resolution while input and other charts remain fixed."
+      }
+    },
+    {
+      "object": {
+        "schema": "main",
+        "name": "chart_pie"
+      },
+      "notebook": "02_observations_and_contributions.ipynb",
+      "sql": [
+        {
+          "cell": "pie-sql",
+          "reference": "chart.main.chart_pie"
+        }
+      ],
+      "narrative_cells": [
+        "pie-question"
+      ],
+      "result_cells": [
+        "pie-figure"
+      ],
+      "interpretation_cells": [
+        "shares-finding"
+      ],
+      "review": {
+        "status": "approved",
+        "reviewer": "/root/notebooks_sympy",
+        "reviewed_at": "2026-11-14T22:09:45.956447+00:00",
+        "notebook_sha256": "c2d465623d4a2b548984480dfcb79ebb5c47822913213397db62583f555dae0b",
+        "catalog_sha256": [
+          "0c7a5aa12f34375aa0c13591da5b963878d266ada7a6c6a6c51ba33d1a4c6b4e",
+          "0de69c909b59164da7a030161f9a55e616f82f98068f898a96c0d08ccf960c18"
+        ],
+        "purpose": "Use additive failure counts as parts of a common total and separate shares from within-region rates.",
+        "finding": "Aster232/Briar50/Cedar88sum370. Aster contributes62.7%of failures despite a5.27%within-region rate; exact nativePNG labels show counts, not misleading sums of percentages."
+      }
+    }
+  ]
+}

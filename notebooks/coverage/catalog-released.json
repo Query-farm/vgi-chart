@@ -1,0 +1,98 @@
+{
+  "schema_version": 1,
+  "repository": "Query-farm/vgi-chart",
+  "revision": "6d7df69faec4c3a2cbd1c75c7c8b275ecba05418",
+  "captured_at": "2026-11-14T21:58:58.502693+00:00",
+  "default_schema": "main",
+  "scope": "all_public_functions_and_tables",
+  "complete": true,
+  "evidence": [
+    {
+      "path": "coverage/released-functions.json",
+      "sha256": "24f8da07ba7298fe82f3c837fe07a2a11cb74665ab98a917618fdbea1650f333",
+      "description": "Complete worker-filtered functions export through actual published Haybarn"
+    },
+    {
+      "path": "coverage/released-tables.json",
+      "sha256": "e82fbbeb914c73c91fae84a2e48445ded670443743f5077a524a17fe2a20fbe2",
+      "description": "Complete worker-filtered tables export through actual published Haybarn"
+    },
+    {
+      "path": "coverage/released-views.json",
+      "sha256": "1d4dee60fb1e07b72c976d7862526eb94ea1c330dfccd991c91ab3669b27035a",
+      "description": "Complete worker-filtered views export through actual published Haybarn"
+    }
+  ],
+  "objects": [
+    {
+      "schema": "main",
+      "name": "chart_bar",
+      "kind": "function",
+      "signatures": [
+        "chart_bar(TABLE, BIGINT, VARCHAR, VARCHAR, BIGINT, VARCHAR, VARCHAR)"
+      ],
+      "authentication": "none",
+      "access": "read"
+    },
+    {
+      "schema": "main",
+      "name": "chart_histogram",
+      "kind": "function",
+      "signatures": [
+        "chart_histogram(TABLE, VARCHAR, BIGINT, BIGINT, BIGINT, VARCHAR)"
+      ],
+      "authentication": "none",
+      "access": "read"
+    },
+    {
+      "schema": "main",
+      "name": "chart_line",
+      "kind": "function",
+      "signatures": [
+        "chart_line(TABLE, VARCHAR, BIGINT, VARCHAR, VARCHAR, BIGINT, VARCHAR)"
+      ],
+      "authentication": "none",
+      "access": "read"
+    },
+    {
+      "schema": "main",
+      "name": "chart_pie",
+      "kind": "function",
+      "signatures": [
+        "chart_pie(TABLE, BIGINT, VARCHAR, BIGINT, VARCHAR, VARCHAR)"
+      ],
+      "authentication": "none",
+      "access": "read"
+    },
+    {
+      "schema": "main",
+      "name": "chart_scatter",
+      "kind": "function",
+      "signatures": [
+        "chart_scatter(TABLE, VARCHAR, BIGINT, VARCHAR, VARCHAR, BIGINT, VARCHAR)"
+      ],
+      "authentication": "none",
+      "access": "read"
+    },
+    {
+      "schema": "main",
+      "name": "chart_types",
+      "kind": "function",
+      "signatures": [
+        "chart_types()"
+      ],
+      "authentication": "none",
+      "access": "read"
+    },
+    {
+      "schema": "main",
+      "name": "chart_types",
+      "kind": "table",
+      "signatures": [
+        "TABLE"
+      ],
+      "authentication": "none",
+      "access": "read"
+    }
+  ]
+}
