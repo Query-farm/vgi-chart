@@ -17,7 +17,7 @@ Catalog name: `chart`.
 
 ```sql
 INSTALL vgi FROM community; LOAD vgi;
-ATTACH 'chart' (TYPE vgi, LOCATION 'java -jar vgi-chart-v0.4.0.jar');
+ATTACH 'chart' (TYPE vgi, LOCATION 'java -jar vgi-chart-v0.4.1.jar');
 
 -- a line chart of (x, y) points -> one PNG BLOB row
 SELECT png
@@ -41,7 +41,7 @@ input relation and emits a single `(png BLOB)` row — the same data-flow as
 with DuckDB's `COPY ... TO 'chart.png' (FORMAT 'raw')` or store it in a table.
 
 The worker is a self-contained, shaded fat JAR. Its manifest sets
-`Add-Opens: java.base/java.nio`, so a bare `java -jar vgi-chart-v0.4.0.jar` works
+`Add-Opens: java.base/java.nio`, so a bare `java -jar vgi-chart-v0.4.1.jar` works
 directly as a VGI `LOCATION` with no extra JVM flags. Charts are rasterized
 headlessly (`java.awt.headless=true`), so no display is ever needed.
 
@@ -50,7 +50,7 @@ headlessly (`java.awt.headless=true`), so no display is ever needed.
 Every [GitHub release](https://github.com/Query-farm/vgi-chart/releases) ships a self-contained worker jar. It needs Java 21 or newer. Download it:
 
 ```sh
-curl -LO https://github.com/Query-farm/vgi-chart/releases/download/v0.4.0/vgi-chart-v0.4.0.jar
+curl -LO https://github.com/Query-farm/vgi-chart/releases/download/v0.4.1/vgi-chart-v0.4.1.jar
 ```
 
 then attach it from DuckDB (run from the directory holding the jar, or use its absolute path):
@@ -59,7 +59,7 @@ then attach it from DuckDB (run from the directory holding the jar, or use its a
 INSTALL vgi FROM community;
 LOAD vgi;
 
-ATTACH 'chart' AS chart (TYPE vgi, LOCATION 'java -jar vgi-chart-v0.4.0.jar');
+ATTACH 'chart' AS chart (TYPE vgi, LOCATION 'java -jar vgi-chart-v0.4.1.jar');
 
 -- Render a line chart from inline points.
 SELECT octet_length(png) FROM chart.main.chart_line((SELECT * FROM (VALUES (1, 10), (2, 25), (3, 18)) AS t(x, y)), x := 'x', y := 'y');
