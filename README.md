@@ -17,7 +17,7 @@ Catalog name: `chart`.
 
 ```sql
 INSTALL vgi FROM community; LOAD vgi;
-ATTACH 'chart' (TYPE vgi, LOCATION 'java -jar vgi-chart-v0.4.1.jar');
+ATTACH 'chart' (TYPE vgi, LOCATION 'java -jar vgi-chart-v0.5.0.jar');
 
 -- a line chart of (x, y) points -> one PNG BLOB row
 SELECT png
@@ -41,7 +41,7 @@ input relation and emits a single `(png BLOB)` row — the same data-flow as
 with DuckDB's `COPY ... TO 'chart.png' (FORMAT 'raw')` or store it in a table.
 
 The worker is a self-contained, shaded fat JAR. Its manifest sets
-`Add-Opens: java.base/java.nio`, so a bare `java -jar vgi-chart-v0.4.1.jar` works
+`Add-Opens: java.base/java.nio`, so a bare `java -jar vgi-chart-v0.5.0.jar` works
 directly as a VGI `LOCATION` with no extra JVM flags. Charts are rasterized
 headlessly (`java.awt.headless=true`), so no display is ever needed.
 
@@ -50,8 +50,10 @@ headlessly (`java.awt.headless=true`), so no display is ever needed.
 Every [GitHub release](https://github.com/Query-farm/vgi-chart/releases) ships a self-contained worker jar. It needs Java 21 or newer. Download it:
 
 ```sh
-curl -LO https://github.com/Query-farm/vgi-chart/releases/download/v0.4.1/vgi-chart-v0.4.1.jar
+curl -LO https://github.com/Query-farm/vgi-chart/releases/download/v0.5.0/vgi-chart-v0.5.0.jar
 ```
+
+Requires Haybarn 2.0.1 or newer (vgi-chart 0.5.0 speaks VGI protocol 3.4; older Haybarn builds load a 3.3 `vgi` extension that cannot attach it).
 
 then attach it from DuckDB (run from the directory holding the jar, or use its absolute path):
 
@@ -59,7 +61,7 @@ then attach it from DuckDB (run from the directory holding the jar, or use its a
 INSTALL vgi FROM community;
 LOAD vgi;
 
-ATTACH 'chart' AS chart (TYPE vgi, LOCATION 'java -jar vgi-chart-v0.4.1.jar');
+ATTACH 'chart' AS chart (TYPE vgi, LOCATION 'java -jar vgi-chart-v0.5.0.jar');
 
 -- Render a line chart from inline points.
 SELECT octet_length(png) FROM chart.main.chart_line((SELECT * FROM (VALUES (1, 10), (2, 25), (3, 18)) AS t(x, y)), x := 'x', y := 'y');
@@ -200,7 +202,7 @@ make test-sql    # fat JAR + haybarn-unittest over test/sql/*
 
 The SQL E2E suite (`test/sql/*.test`) runs the real functions inside DuckDB via
 [`haybarn-unittest`](https://pypi.org/project/haybarn-unittest/) with the fat JAR
-as the VGI `LOCATION`. Install the runner once with `uv tool install --prerelease allow 'haybarn-unittest>=2.0.0rc11,<2.1'`
+as the VGI `LOCATION`. Install the runner once with `uv tool install --prerelease allow 'haybarn-unittest>=2.0.1rc3,<2.1'`
 and put `~/.local/bin` on `PATH`. Each `.test` builds its data with `VALUES`/a CTE
 and asserts the result is a non-empty PNG via `png[1:4] = '\x89PNG'::BLOB` and
 `octet_length(png) > 100`.

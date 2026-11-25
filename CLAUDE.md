@@ -74,7 +74,7 @@ Makefile                        build / test-unit / test-sql / test / clean
 
 ## SDK dependency & CI (self-contained via Maven Central)
 
-Depends on `farm.query:vgi:0.47.0` (pulls in `farm.query:vgirpc:0.33.3`
+Depends on `farm.query:vgi:0.50.1` (pulls in `farm.query:vgirpc:0.34.1`
 transitively; vgirpc declared explicitly since the code imports
 `farm.query.vgirpc.*`) and `org.jfree:jfreechart:1.5.6`. The VGI SDK provides
 `Worker.schemaTags`, `FunctionMetadata.withTag(s)` and `withExamples`, used to
@@ -120,9 +120,11 @@ JUnit (which uses explicit `Float8Vector` fixtures) and was caught only by E2E.
 
 ## VGI protocol / haybarn 2.0
 
-vgi 0.48.0 speaks VGI protocol **vgi.v3 / 3.3.0** (`/health` reports
-`"protocol":"vgi.v3"`); only haybarn **2.0**'s community `vgi` extension attaches
-it. CI resolves the newest `haybarn-v2.0.*` release, runs `haybarn-unittest
+vgi 0.50.1 speaks VGI protocol **vgi.v3 / 3.4.0** (`/health` reports
+`"protocol":"vgi.v3"`); major+minor must match exactly, so only the 3.4 `vgi`
+extension attaches it: Haybarn **2.0.1** (`INSTALL vgi FROM community`; Haybarn
+2.0.0 still serves the 3.3 build) or stock DuckDB 2.0 (`FROM query_farm`). CI
+resolves the newest `haybarn-v2.0.1*` release, runs `haybarn-unittest
 --keep-home`, and gates metadata with `Query-farm/vgi-lint-check@v2`.
 Catalog-table constraints are canonical `ConstraintRecord`s passed to
 `CatalogTable.Builder#constraints(..)`; the legacy `.primaryKey(..)` builders throw
